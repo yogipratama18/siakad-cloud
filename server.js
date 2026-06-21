@@ -282,3 +282,5 @@ app.listen(PORT, () => {
   console.log(`✅ SIAKAD berjalan di http://localhost:${PORT}`);
   console.log(`👤 Login: admin / admin123`);
 });
+
+module.exports = app;
