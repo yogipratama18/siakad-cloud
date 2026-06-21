@@ -4,431 +4,568 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIAKAD — Sistem Informasi Akademik</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --primary: #1a56db;
-    --primary-dark: #1240a8;
-    --primary-light: #e8f0fe;
-    --secondary: #0f766e;
-    --success: #16a34a;
-    --warning: #d97706;
-    --danger: #dc2626;
-    --info: #0891b2;
-    --bg: #f3f4f6;
-    --card: #ffffff;
-    --sidebar: #1e293b;
-    --sidebar-active: #334155;
-    --text: #111827;
-    --text-muted: #6b7280;
-    --border: #e5e7eb;
-    --radius: 10px;
-    --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 2px 12px rgba(0,0,0,0.06);
-    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+:root {
+  /* Soft Cream & Grey Palette */
+  --bg:          #f5f4f0;
+  --bg2:         #eeece7;
+  --card:        #fafaf8;
+  --card2:       #f0ede8;
+  --sidebar:     #2c2c2c;
+  --sidebar2:    #383838;
+  --sidebar-active: #4a4a4a;
+  --text:        #1a1a1a;
+  --text2:       #3d3d3d;
+  --text-muted:  #888880;
+  --text-light:  #b0ae a6;
+  --border:      #e2dfd9;
+  --border2:     #d4d1cb;
 
-  /* LOGIN */
-  #login-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #1e293b 0%, #1a56db 100%);
-  }
-  .login-box {
-    background: #fff;
-    border-radius: 18px;
-    padding: 2.5rem 2.8rem;
-    width: 420px;
-    max-width: 95vw;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.18);
-  }
-  .login-logo {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 2rem;
-  }
-  .login-logo .icon {
-    width: 48px; height: 48px;
-    background: var(--primary);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; color: #fff;
-  }
-  .login-logo h1 { font-size: 22px; font-weight: 700; color: var(--text); }
-  .login-logo p { font-size: 12px; color: var(--text-muted); }
-  .form-group { margin-bottom: 1.2rem; }
-  .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-  .form-group input, .form-group select, .form-group textarea {
-    width: 100%; padding: 10px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px; font-size: 14px;
-    transition: border-color .2s;
-    background: #fafafa;
-    font-family: var(--font);
-  }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none; border-color: var(--primary);
-    background: #fff; box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
-  }
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 20px; border: none; border-radius: 8px;
-    font-size: 14px; font-weight: 600; cursor: pointer;
-    transition: all .15s; font-family: var(--font);
-  }
-  .btn-primary { background: var(--primary); color: #fff; }
-  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-  .btn-secondary { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
-  .btn-secondary:hover { background: #e9ebee; }
-  .btn-danger { background: var(--danger); color: #fff; }
-  .btn-danger:hover { background: #b91c1c; }
-  .btn-success { background: var(--success); color: #fff; }
-  .btn-success:hover { background: #15803d; }
-  .btn-sm { padding: 6px 12px; font-size: 12px; }
-  .btn-full { width: 100%; justify-content: center; }
-  .login-roles { display: flex; gap: 8px; margin-bottom: 1.4rem; }
-  .role-btn {
-    flex: 1; padding: 10px;
-    border: 2px solid var(--border); border-radius: 8px;
-    background: #fff; cursor: pointer; text-align: center;
-    font-size: 13px; font-weight: 600; color: var(--text-muted);
-    transition: all .15s;
-  }
-  .role-btn.active { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-  .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 1rem; }
-  .alert-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
-  .alert-success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+  /* Accent — warm stone */
+  --accent:      #5c5c4a;
+  --accent2:     #7a7a62;
+  --accent-light:#f0ede6;
 
-  /* APP LAYOUT */
-  #app { display: none; min-height: 100vh; }
-  .layout { display: flex; min-height: 100vh; }
-  .sidebar {
-    width: 240px; background: var(--sidebar); color: #fff;
-    display: flex; flex-direction: column;
-    position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
-    transition: transform .3s;
-  }
-  .sidebar-header {
-    padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .sidebar-logo {
-    width: 36px; height: 36px; background: var(--primary);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-  }
-  .sidebar-title { font-size: 15px; font-weight: 700; }
-  .sidebar-sub { font-size: 11px; color: rgba(255,255,255,0.5); }
-  .nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
-  .nav-section { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 10px 4px; }
-  .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px; border-radius: 8px; cursor: pointer;
-    color: rgba(255,255,255,0.7); font-size: 13.5px; font-weight: 500;
-    transition: all .15s; margin-bottom: 2px;
-  }
-  .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
-  .nav-item.active { background: var(--primary); color: #fff; }
-  .nav-item .icon { font-size: 16px; width: 20px; flex-shrink: 0; }
-  .sidebar-footer {
-    padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .user-info {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px; border-radius: 8px;
-    cursor: pointer; transition: background .15s;
-  }
-  .user-info:hover { background: rgba(255,255,255,0.08); }
-  .avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
-  }
-  .user-name { font-size: 13px; font-weight: 600; color: #fff; }
-  .user-role { font-size: 11px; color: rgba(255,255,255,0.5); }
+  /* Semantic */
+  --success:     #4a7c59;
+  --success-bg:  #edf4f0;
+  --warning:     #8c6d3f;
+  --warning-bg:  #f7f0e6;
+  --danger:      #8c4a4a;
+  --danger-bg:   #f7edec;
+  --info:        #4a6b8c;
+  --info-bg:     #edf2f7;
 
-  /* MAIN CONTENT */
-  .main { margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
-  .topbar {
-    background: #fff; border-bottom: 1px solid var(--border);
-    padding: 0 24px; height: 60px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 50;
-  }
-  .topbar-title { font-size: 17px; font-weight: 700; }
-  .topbar-right { display: flex; align-items: center; gap: 12px; }
-  .badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
-  }
-  .badge-primary { background: var(--primary-light); color: var(--primary); }
-  .badge-success { background: #f0fdf4; color: var(--success); }
-  .badge-warning { background: #fffbeb; color: var(--warning); }
-  .badge-danger { background: #fef2f2; color: var(--danger); }
-  .badge-info { background: #ecfeff; color: var(--info); }
-  .content { flex: 1; padding: 24px; }
+  --radius:      14px;
+  --radius-sm:   8px;
+  --radius-lg:   20px;
+  --shadow:      0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.10);
+  --font:        'Inter', system-ui, sans-serif;
+  --transition:  all .2s cubic-bezier(.4,0,.2,1);
+}
 
-  /* CARDS */
-  .card {
-    background: var(--card); border-radius: var(--radius);
-    box-shadow: var(--shadow); border: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .card-header {
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card-title { font-size: 15px; font-weight: 700; }
-  .card-body { padding: 20px; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-  /* STAT CARDS */
-  .stats-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px; margin-bottom: 24px;
-  }
-  .stat-card {
-    background: #fff; border-radius: var(--radius);
-    padding: 20px; border: 1px solid var(--border);
-    box-shadow: var(--shadow); display: flex; gap: 16px; align-items: flex-start;
-  }
-  .stat-icon {
-    width: 48px; height: 48px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; flex-shrink: 0;
-  }
-  .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
-  .stat-value { font-size: 28px; font-weight: 800; color: var(--text); }
-  .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+/* ── ANIMATED SVG ICONS ── */
+.ic { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ic svg { overflow: visible; }
 
-  /* TABLE */
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  thead th { padding: 10px 14px; background: #f8fafc; font-weight: 700; color: var(--text-muted); text-align: left; border-bottom: 2px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
-  tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  tbody tr:hover { background: #f8fafc; }
-  tbody tr:last-child td { border-bottom: none; }
-  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+/* Pulse animation for status dot */
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.7;transform:scale(1.15)} }
+@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideIn { from{transform:translateY(16px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+@keyframes drawLine { from{stroke-dashoffset:100} to{stroke-dashoffset:0} }
+@keyframes popIn { 0%{transform:scale(.8);opacity:0} 80%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
 
-  /* MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000; padding: 16px; backdrop-filter: blur(2px);
-  }
-  .modal {
-    background: #fff; border-radius: 16px;
-    width: 100%; max-width: 520px; max-height: 90vh;
-    overflow-y: auto; box-shadow: 0 24px 60px rgba(0,0,0,0.2);
-  }
-  .modal-header {
-    padding: 18px 22px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; background: #fff; z-index: 1;
-  }
-  .modal-title { font-size: 16px; font-weight: 700; }
-  .modal-body { padding: 22px; }
-  .modal-footer { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
-  .close-btn { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted); line-height: 1; padding: 4px; border-radius: 4px; }
-  .close-btn:hover { background: var(--bg); }
+.anim-fadeup { animation: fadeUp .4s ease both; }
+.anim-pop { animation: popIn .3s cubic-bezier(.4,0,.2,1) both; }
 
-  /* GRID LAYOUT */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-  .gap-16 { gap: 16px; }
-  .mb-16 { margin-bottom: 16px; }
-  .mb-24 { margin-bottom: 24px; }
-  .flex { display: flex; }
-  .flex-between { display: flex; align-items: center; justify-content: space-between; }
-  .flex-gap { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+/* ── LOGIN ── */
+#login-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+  position: relative; overflow: hidden;
+}
+.login-deco {
+  position: absolute; border-radius: 50%;
+  background: var(--border); opacity: .5;
+  pointer-events: none;
+}
+.login-deco-1 { width:400px;height:400px;top:-150px;right:-100px; }
+.login-deco-2 { width:250px;height:250px;bottom:-80px;left:-60px; }
+.login-deco-3 { width:120px;height:120px;bottom:100px;right:200px;background:var(--border2); }
 
-  /* SEARCH BAR */
-  .search-bar {
-    display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;
-  }
-  .search-input {
-    flex: 1; min-width: 200px; padding: 9px 14px;
-    border: 1.5px solid var(--border); border-radius: 8px;
-    font-size: 13.5px; background: #fff; font-family: var(--font);
-    transition: border-color .2s;
-  }
-  .search-input:focus { outline: none; border-color: var(--primary); }
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.8rem 3rem;
+  width: 420px; max-width: 95vw;
+  box-shadow: var(--shadow-lg);
+  position: relative; z-index: 1;
+  animation: fadeUp .5s ease;
+}
+.login-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 2rem; }
+.login-brand-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: var(--sidebar);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+.login-brand h1 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+.login-brand p { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
 
-  /* GRADE TABLE */
-  .grade-cell { 
-    font-weight: 700; font-size: 14px;
-    width: 40px; height: 30px; border-radius: 6px;
-    display: inline-flex; align-items: center; justify-content: center;
-  }
-  .g-a { background: #f0fdf4; color: #16a34a; }
-  .g-b { background: #eff6ff; color: #2563eb; }
-  .g-c { background: #fffbeb; color: #d97706; }
-  .g-d { background: #fff7ed; color: #ea580c; }
-  .g-e { background: #fef2f2; color: #dc2626; }
+.role-tabs { display: flex; gap: 6px; background: var(--bg2); padding: 5px; border-radius: 12px; margin-bottom: 1.6rem; }
+.role-tab {
+  flex: 1; padding: 9px 8px; border-radius: 9px; border: none;
+  background: transparent; cursor: pointer; font-family: var(--font);
+  font-size: 12.5px; font-weight: 600; color: var(--text-muted);
+  transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.role-tab.active { background: var(--card); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.role-tab svg { flex-shrink: 0; }
 
-  /* CHART */
-  .chart-container { position: relative; }
-  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 160px; padding: 0 4px; }
-  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .bar { border-radius: 6px 6px 0 0; min-width: 20px; transition: opacity .2s; cursor: default; }
-  .bar:hover { opacity: 0.8; }
-  .bar-label { font-size: 10px; color: var(--text-muted); font-weight: 600; }
-  .bar-value { font-size: 11px; font-weight: 700; }
+.form-group { margin-bottom: 1.1rem; }
+.form-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--text2); margin-bottom: 6px; letter-spacing: .01em; }
+.form-input {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px; font-family: var(--font);
+  background: var(--bg); color: var(--text);
+  transition: var(--transition);
+}
+.form-input:focus { outline: none; border-color: var(--accent2); background: var(--card); box-shadow: 0 0 0 3px rgba(90,90,74,.1); }
+.form-input::placeholder { color: var(--text-muted); }
 
-  /* SEMESTER SELECTOR */
-  .sem-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-  .sem-tab {
-    flex: 1; min-width: 80px; padding: 7px 12px; border-radius: 7px;
-    font-size: 12px; font-weight: 600; color: var(--text-muted);
-    cursor: pointer; text-align: center; transition: all .15s;
-  }
-  .sem-tab.active { background: #fff; color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 11px 20px; border: none; border-radius: var(--radius-sm);
+  font-size: 13.5px; font-weight: 600; cursor: pointer;
+  font-family: var(--font); transition: var(--transition); text-decoration: none;
+  letter-spacing: -.01em;
+}
+.btn:active { transform: scale(.98); }
+.btn-dark { background: var(--sidebar); color: #fff; }
+.btn-dark:hover { background: var(--sidebar2); box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+.btn-ghost { background: var(--bg2); color: var(--text2); border: 1.5px solid var(--border); }
+.btn-ghost:hover { background: var(--border); }
+.btn-danger { background: var(--danger-bg); color: var(--danger); border: 1.5px solid #e8c9c9; }
+.btn-danger:hover { background: #f0d6d5; }
+.btn-success-soft { background: var(--success-bg); color: var(--success); border: 1.5px solid #c5dccb; }
+.btn-success-soft:hover { background: #d8ece0; }
+.btn-sm { padding: 7px 13px; font-size: 12px; border-radius: 7px; }
+.btn-full { width: 100%; }
+.btn-icon { width: 34px; height: 34px; padding: 0; border-radius: 8px; }
 
-  /* BACKUP */
-  .backup-card {
-    border: 2px dashed var(--border); border-radius: 12px;
-    padding: 28px; text-align: center; cursor: pointer; transition: all .2s;
-  }
-  .backup-card:hover { border-color: var(--primary); background: var(--primary-light); }
-  .backup-icon { font-size: 40px; margin-bottom: 12px; }
-  .backup-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-  .backup-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
-  .backup-item:last-child { border-bottom: none; }
-  .backup-item:hover { background: #f8fafc; }
+.alert { padding: 11px 15px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; margin-bottom: 1rem; }
+.alert-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid #e8c9c9; }
 
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
-    .main { margin-left: 0; }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .topbar { padding: 0 14px; }
-    .content { padding: 14px; }
-  }
+.login-hint { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 18px; line-height: 1.7; }
+.login-hint code { background: var(--bg2); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
 
-  /* PILL TAGS */
-  .pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-  .pill-blue { background: #eff6ff; color: #2563eb; }
-  .pill-green { background: #f0fdf4; color: #16a34a; }
-  .pill-orange { background: #fff7ed; color: #ea580c; }
-  .pill-purple { background: #faf5ff; color: #7c3aed; }
-  .pill-gray { background: #f3f4f6; color: #4b5563; }
+/* ── LAYOUT ── */
+#app { display: none; min-height: 100vh; }
+.layout { display: flex; min-height: 100vh; }
 
-  /* PROGRESS BAR */
-  .progress { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
-  .progress-bar { height: 100%; border-radius: 4px; transition: width .6s; }
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px; background: var(--sidebar); color: #fff;
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-top { padding: 20px 14px 12px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; }
+.sidebar-brand-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: rgba(255,255,255,.12);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sidebar-brand-name { font-size: 15px; font-weight: 800; letter-spacing: -.3px; }
+.sidebar-brand-sub { font-size: 10px; color: rgba(255,255,255,.45); margin-top: 1px; }
 
-  /* TOAST */
-  #toast {
-    position: fixed; bottom: 24px; right: 24px;
-    padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
-    color: #fff; z-index: 9999; display: none;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    animation: slideIn .3s ease;
-  }
-  @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  .toast-success { background: var(--success); }
-  .toast-danger { background: var(--danger); }
-  .toast-info { background: var(--primary); }
+.nav { flex: 1; padding: 10px 8px; overflow-y: auto; }
+.nav::-webkit-scrollbar { width: 3px; }
+.nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+.nav-section {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,.3);
+  text-transform: uppercase; letter-spacing: .1em;
+  padding: 12px 10px 5px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 12px; border-radius: 9px; cursor: pointer;
+  color: rgba(255,255,255,.62); font-size: 13px; font-weight: 500;
+  transition: var(--transition); margin-bottom: 1px;
+}
+.nav-item:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); }
+.nav-item.active { background: rgba(255,255,255,.13); color: #fff; }
+.nav-item.active .nav-dot { opacity: 1; }
+.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: #fff; opacity: 0; margin-left: auto; transition: var(--transition); }
+.nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
 
-  /* PROFILE CARD */
-  .profile-header {
-    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
-    padding: 28px; color: #fff; border-radius: var(--radius) var(--radius) 0 0;
-    display: flex; align-items: center; gap: 20px;
-  }
-  .profile-avatar { width: 72px; height: 72px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; }
-  .profile-name { font-size: 22px; font-weight: 800; }
-  .profile-sub { font-size: 13px; opacity: 0.8; }
+.sidebar-foot { padding: 10px 8px; border-top: 1px solid rgba(255,255,255,.07); }
+.user-card {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 12px; border-radius: 9px; cursor: pointer;
+  transition: var(--transition); margin-bottom: 2px;
+}
+.user-card:hover { background: rgba(255,255,255,.07); }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.user-name { font-size: 12.5px; font-weight: 600; color: #fff; }
+.user-role-label { font-size: 10.5px; color: rgba(255,255,255,.45); }
+.nav-logout {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 12px; border-radius: 9px; cursor: pointer;
+  color: rgba(255,100,100,.7); font-size: 13px; font-weight: 500;
+  transition: var(--transition);
+}
+.nav-logout:hover { background: rgba(255,100,100,.1); color: rgba(255,120,120,.9); }
 
-  /* TRANSCRIPT */
-  .transcript-header { text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--border); }
-  .transcript-header h2 { font-size: 18px; font-weight: 800; }
-  .gpa-display { font-size: 40px; font-weight: 900; color: var(--primary); }
-  .gpa-label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+/* ── MAIN ── */
+.main { margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar {
+  background: var(--card); border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.topbar-title { font-size: 16px; font-weight: 700; letter-spacing: -.2px; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.status-dot { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+.status-dot span { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; display: inline-block; }
+.semester-tag { font-size: 12px; color: var(--text-muted); background: var(--bg2); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); }
 
-  /* PAGE SECTIONS */
-  .page { display: none; }
-  .page.active { display: block; }
+.content { flex: 1; padding: 24px; }
 
-  /* CHART LEGEND */
-  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
-  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
-  .divider { height: 1px; background: var(--border); margin: 16px 0; }
-  input[type="number"] { -moz-appearance: textfield; }
-  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.card-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.card-body { padding: 20px; }
+
+/* ── STAT CARDS ── */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px; margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px;
+  box-shadow: var(--shadow); display: flex; gap: 14px; align-items: center;
+  transition: var(--transition); cursor: default;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--border2); }
+.stat-icon-wrap {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+.stat-value { font-size: 26px; font-weight: 900; color: var(--text); letter-spacing: -.5px; line-height: 1; }
+.stat-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  padding: 10px 14px; background: var(--bg);
+  font-weight: 700; color: var(--text-muted); text-align: left;
+  border-bottom: 1.5px solid var(--border);
+  font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+  white-space: nowrap;
+}
+tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tbody tr:hover { background: var(--bg); }
+tbody tr:last-child td { border-bottom: none; }
+.actions { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+
+/* ── BADGES / PILLS ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+}
+.badge-success { background: var(--success-bg); color: var(--success); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); }
+.badge-danger  { background: var(--danger-bg); color: var(--danger); }
+.badge-info    { background: var(--info-bg); color: var(--info); }
+.badge-neutral { background: var(--bg2); color: var(--text2); }
+
+.pill { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+.pill-stone  { background: var(--card2); color: var(--text2); border: 1px solid var(--border); }
+.pill-blue   { background: var(--info-bg); color: var(--info); }
+.pill-green  { background: var(--success-bg); color: var(--success); }
+.pill-amber  { background: var(--warning-bg); color: var(--warning); }
+.pill-red    { background: var(--danger-bg); color: var(--danger); }
+
+/* ── GRADE BADGES ── */
+.grade-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 28px; border-radius: 7px;
+  font-weight: 800; font-size: 12px; letter-spacing: -.2px;
+}
+.g-a { background: var(--success-bg); color: var(--success); }
+.g-b { background: var(--info-bg); color: var(--info); }
+.g-c { background: var(--warning-bg); color: var(--warning); }
+.g-d { background: #f7f0e6; color: #a0693f; }
+.g-e { background: var(--danger-bg); color: var(--danger); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.35);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 16px; backdrop-filter: blur(4px);
+}
+.modal {
+  background: var(--card); border-radius: var(--radius-lg);
+  width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0,0,0,.18);
+  border: 1px solid var(--border);
+  animation: popIn .25s cubic-bezier(.4,0,.2,1);
+}
+.modal-header {
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--card); z-index: 1;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.modal-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.modal-body { padding: 22px; }
+.modal-footer { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+.close-btn {
+  background: var(--bg2); border: 1px solid var(--border);
+  width: 30px; height: 30px; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); transition: var(--transition);
+}
+.close-btn:hover { background: var(--border); color: var(--text); }
+
+/* ── FORM ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-20 { margin-bottom: 20px; }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* ── SEARCH ── */
+.toolbar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.search-wrap { position: relative; flex: 1; min-width: 200px; }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.search-wrap .form-input { padding-left: 36px; }
+.filter-select { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: var(--font); background: var(--card); color: var(--text); transition: var(--transition); max-width: 180px; }
+.filter-select:focus { outline: none; border-color: var(--accent2); }
+
+/* ── PROGRESS ── */
+.progress { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+
+/* ── BAR CHART ── */
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 140px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar-fill { width: 100%; border-radius: 6px 6px 0 0; transition: height .6s cubic-bezier(.4,0,.2,1); position: relative; }
+.bar-fill:hover { filter: brightness(.92); cursor: default; }
+.bar-num { font-size: 11px; font-weight: 700; color: var(--text2); }
+.bar-lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 24px; right: 24px;
+  padding: 12px 18px; border-radius: 11px;
+  font-size: 13.5px; font-weight: 600; color: var(--card);
+  z-index: 9999; display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  animation: slideIn .3s ease;
+  display: none; align-items: center; gap: 8px;
+  max-width: 320px;
+}
+.toast-success { background: var(--success); }
+.toast-warning { background: var(--warning); }
+.toast-danger  { background: var(--danger); }
+.toast-info    { background: var(--accent); }
+
+/* ── PROFILE HEADER ── */
+.profile-hero {
+  background: var(--sidebar); color: #fff; padding: 28px 24px;
+  display: flex; align-items: center; gap: 18px;
+}
+.profile-hero-avatar {
+  width: 68px; height: 68px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 900;
+  border: 2.5px solid rgba(255,255,255,.2);
+}
+.profile-hero-name { font-size: 20px; font-weight: 800; }
+.profile-hero-sub { font-size: 12.5px; color: rgba(255,255,255,.55); margin-top: 3px; }
+
+/* ── BACKUP ── */
+.backup-drop {
+  border: 2px dashed var(--border2); border-radius: var(--radius);
+  padding: 32px 20px; text-align: center; cursor: pointer;
+  transition: var(--transition);
+}
+.backup-drop:hover { border-color: var(--accent2); background: var(--accent-light); }
+.backup-list-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.backup-list-item:hover { background: var(--bg); }
+.backup-list-item:last-child { border-bottom: none; }
+
+/* ── TRANSKRIP ── */
+.transkrip-header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.transkrip-gpa { font-size: 42px; font-weight: 900; color: var(--sidebar); letter-spacing: -1px; }
+
+/* ── UTILS ── */
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.text-muted { color: var(--text-muted); }
+.text-sm { font-size: 12px; }
+.fw-700 { font-weight: 700; }
+.fw-600 { font-weight: 600; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .topbar { padding: 0 14px; }
+  .content { padding: 14px; }
+  #mob-toggle { display: flex !important; }
+}
+#mob-toggle { display: none; }
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ======= LOGIN ======= -->
 <div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="icon">🎓</div>
+  <div class="login-deco login-deco-1"></div>
+  <div class="login-deco login-deco-2"></div>
+  <div class="login-deco login-deco-3"></div>
+
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-brand-icon">
+        <!-- Animated graduation cap SVG -->
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <style>
+            .cap-brim { animation: float 3s ease-in-out infinite; transform-origin: center; }
+            .cap-tassel { animation: bounce 2s ease-in-out infinite; transform-origin: top; }
+          </style>
+          <g class="cap-brim">
+            <polygon points="14,5 26,11 14,17 2,11" fill="rgba(255,255,255,.95)"/>
+            <rect x="12.5" y="14" width="3" height="8" rx="1" fill="rgba(255,255,255,.7)"/>
+          </g>
+          <g class="cap-tassel">
+            <circle cx="22" cy="11" r="1.5" fill="rgba(255,255,255,.8)"/>
+            <line x1="22" y1="12.5" x2="22" y2="18" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="22" cy="19" r="2" fill="rgba(255,255,255,.6)"/>
+          </g>
+        </svg>
+      </div>
       <div>
         <h1>SIAKAD</h1>
-        <p>Sistem Informasi Akademik</p>
+        <p>Sistem Informasi Akademik Cloud</p>
       </div>
     </div>
-    <div class="login-roles">
-      <div class="role-btn active" onclick="setRole('admin')" id="role-admin">🔑 Admin</div>
-      <div class="role-btn" onclick="setRole('dosen')" id="role-dosen">👨‍🏫 Dosen</div>
-      <div class="role-btn" onclick="setRole('mahasiswa')" id="role-mhs">🎓 Mahasiswa</div>
+
+    <div class="role-tabs" id="role-tabs">
+      <button class="role-tab active" onclick="setRole('admin')" id="role-admin">
+        <!-- Shield icon -->
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Admin
+      </button>
+      <button class="role-tab" onclick="setRole('dosen')" id="role-dosen">
+        <!-- User check icon -->
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+        Dosen
+      </button>
+      <button class="role-tab" onclick="setRole('mahasiswa')" id="role-mhs">
+        <!-- Book icon -->
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Mahasiswa
+      </button>
     </div>
+
     <div id="login-alert" class="alert alert-danger" style="display:none"></div>
+
     <div class="form-group">
-      <label>Username / NIM / NIDN</label>
-      <input type="text" id="login-user" placeholder="Masukkan username" value="admin">
+      <label class="form-label">Username / NIM / NIDN</label>
+      <input class="form-input" type="text" id="login-user" placeholder="Masukkan username" value="admin">
     </div>
     <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="login-pass" placeholder="Masukkan password" value="admin123" onkeydown="if(event.key==='Enter')doLogin()">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="login-pass" placeholder="Masukkan password" value="admin123" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="btn btn-primary btn-full" onclick="doLogin()" style="margin-top:4px">Masuk →</button>
-    <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:16px">
-      Demo: admin/admin123 | dosen/dosen123 | mahasiswa/mhs123
-    </p>
+    <button class="btn btn-dark btn-full" onclick="doLogin()" style="margin-top:6px;padding:13px">
+      Masuk
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+
+    <div class="login-hint">
+      Demo akses · <code>admin/admin123</code> <code>dosen/dosen123</code> <code>mahasiswa/mhs123</code>
+    </div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ======= APP ======= -->
 <div id="app">
   <div class="layout">
+
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">🎓</div>
-        <div>
-          <div class="sidebar-title">SIAKAD</div>
-          <div class="sidebar-sub">v2.0 Cloud</div>
+      <div class="sidebar-top">
+        <div class="sidebar-brand">
+          <div class="sidebar-brand-icon">
+            <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
+              <polygon points="14,4 26,10 14,16 2,10" fill="rgba(255,255,255,.9)"/>
+              <rect x="12.5" y="13" width="3" height="7" rx="1" fill="rgba(255,255,255,.6)"/>
+            </svg>
+          </div>
+          <div>
+            <div class="sidebar-brand-name">SIAKAD</div>
+            <div class="sidebar-brand-sub">v2.0 · Cloud Edition</div>
+          </div>
         </div>
       </div>
       <nav class="nav" id="sidebar-nav"></nav>
-      <div class="sidebar-footer">
-        <div class="user-info" onclick="navigate('profile')">
-          <div class="avatar" id="user-avatar" style="background:var(--primary)">A</div>
+      <div class="sidebar-foot">
+        <div class="user-card" onclick="navigate('profile')">
+          <div class="user-avatar" id="user-avatar" style="background:#4a4a4a">A</div>
           <div>
             <div class="user-name" id="user-name">Admin</div>
-            <div class="user-role" id="user-role">Administrator</div>
+            <div class="user-role-label" id="user-role">Administrator</div>
           </div>
         </div>
-        <div class="nav-item" onclick="doLogout()" style="color:#f87171">
-          <span class="icon">🚪</span> Keluar
+        <div class="nav-logout" onclick="doLogout()">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar
         </div>
       </div>
     </aside>
 
+    <!-- MAIN -->
     <div class="main">
       <div class="topbar">
-        <div style="display:flex;align-items:center;gap:10px">
-          <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="btn btn-secondary btn-sm" style="display:none" id="menu-toggle">☰</button>
+        <div class="topbar-left">
+          <button id="mob-toggle" class="btn btn-ghost btn-icon" onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
           <div class="topbar-title" id="page-title">Dashboard</div>
         </div>
         <div class="topbar-right">
-          <span style="font-size:12px;color:var(--text-muted)">Semester Ganjil 2024/2025</span>
-          <div class="badge badge-success">🟢 Online</div>
+          <span class="semester-tag">Ganjil 2024/2025</span>
+          <div class="status-dot"><span></span>Online</div>
         </div>
       </div>
       <div class="content" id="main-content"></div>
@@ -436,14 +573,53 @@
   </div>
 </div>
 
-<!-- MODAL CONTAINER -->
+<!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay" style="display:none" onclick="closeModal(event)">
   <div class="modal" id="modal-box"></div>
 </div>
+
 <div id="toast"></div>
 
 <script>
-// ========== DATA STORE ==========
+// ═══════════════════════════════════════
+// SVG ICON LIBRARY
+// ═══════════════════════════════════════
+const ICONS = {
+  dashboard: `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>`,
+  profile:    `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  mahasiswa:  `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
+  matakuliah: `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>`,
+  nilai:      `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
+  backup:     `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
+  arsitektur: `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  transkrip:  `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>`,
+  search:     `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  plus:       `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  edit:       `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  trash:      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>`,
+  eye:        `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  save:       `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>`,
+  download:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+  restore:    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>`,
+  check:      `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`,
+  x:          `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  print:      `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>`,
+  cloud:      `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>`,
+  lock:       `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`,
+  settings:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
+  chart:      `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+  star:       `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  robot:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="9" cy="16" r="1" fill="currentColor"/><circle cx="15" cy="16" r="1" fill="currentColor"/><path d="M12 11V7"/><path d="M8 7h8"/></svg>`,
+  person:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+};
+
+function ico(name, extra='') {
+  return ICONS[name] || `<span>${name}</span>`;
+}
+
+// ═══════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════
 const DB = {
   mahasiswa: [
     { nim:'2024001', nama:'Ahmad Rizal Pratama', prodi:'Teknik Informatika', angkatan:2024, semester:2, email:'ahmad@student.ac.id', telp:'081234567890', alamat:'Jl. Merdeka No.1', ipk:3.75, status:'aktif' },
@@ -472,46 +648,41 @@ const DB = {
     { nim:'2022002', kode:'TIF302', uts:89, uas:91, tugas:93, hadir:95, nilai_akhir:91, grade:'A' },
   ],
   backups: [
-    { id:'bk001', nama:'Backup Otomatis', waktu:'2025-01-21 02:00:00', ukuran:'2.4 MB', status:'sukses', tipe:'otomatis' },
-    { id:'bk002', nama:'Backup Manual', waktu:'2025-01-20 15:30:00', ukuran:'2.3 MB', status:'sukses', tipe:'manual' },
-    { id:'bk003', nama:'Backup Otomatis', waktu:'2025-01-20 02:00:00', ukuran:'2.3 MB', status:'sukses', tipe:'otomatis' },
+    { id:'bk001', nama:'Backup Otomatis', waktu:'2025-01-21 02:00', ukuran:'2.4 MB', status:'sukses', tipe:'otomatis' },
+    { id:'bk002', nama:'Backup Manual', waktu:'2025-01-20 15:30', ukuran:'2.3 MB', status:'sukses', tipe:'manual' },
+    { id:'bk003', nama:'Backup Otomatis', waktu:'2025-01-20 02:00', ukuran:'2.3 MB', status:'sukses', tipe:'otomatis' },
   ],
   users: [
-    { id:'admin', pass:'admin123', role:'admin', nama:'Administrator', nidn:'', avatar:'bg:#1a56db', color:'#1a56db' },
-    { id:'dosen', pass:'dosen123', role:'dosen', nama:'Dr. Hendra Wijaya', nidn:'0123456789', avatar:'#16a34a', color:'#16a34a' },
-    { id:'mahasiswa', pass:'mhs123', role:'mahasiswa', nama:'Ahmad Rizal Pratama', nim:'2024001', avatar:'#7c3aed', color:'#7c3aed' },
+    { id:'admin', pass:'admin123', role:'admin', nama:'Administrator', color:'#3a3a3a' },
+    { id:'dosen', pass:'dosen123', role:'dosen', nama:'Dr. Hendra Wijaya', nidn:'0123456789', color:'#4a5a4a' },
+    { id:'mahasiswa', pass:'mhs123', role:'mahasiswa', nama:'Ahmad Rizal Pratama', nim:'2024001', color:'#4a4a5a' },
   ]
 };
 
-// ========== AUTH ==========
+// ═══ AUTH ═══
 let currentUser = null;
-let currentRole = 'admin';
-let currentPage = 'dashboard';
 
 function setRole(r) {
-  currentRole = r;
-  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('role-'+r.replace('mahasiswa','mhs')).classList.add('active');
-  const defaults = { admin:['admin','admin123'], dosen:['dosen','dosen123'], mahasiswa:['mahasiswa','mhs123'] };
-  document.getElementById('login-user').value = defaults[r][0];
-  document.getElementById('login-pass').value = defaults[r][1];
+  document.querySelectorAll('.role-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('role-'+(r==='mahasiswa'?'mhs':r)).classList.add('active');
+  const d = {admin:['admin','admin123'],dosen:['dosen','dosen123'],mahasiswa:['mahasiswa','mhs123']};
+  document.getElementById('login-user').value = d[r][0];
+  document.getElementById('login-pass').value = d[r][1];
 }
 
 function doLogin() {
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value.trim();
-  const user = DB.users.find(x => x.id === u && x.pass === p);
-  if (!user) {
-    showAlert('login-alert','Username atau password salah!','danger');
-    return;
-  }
+  const user = DB.users.find(x => x.id===u && x.pass===p);
+  if (!user) { showAlert('login-alert','Username atau password salah'); return; }
   currentUser = user;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   document.getElementById('user-name').textContent = user.nama;
-  document.getElementById('user-role').textContent = user.role === 'admin' ? 'Administrator' : user.role === 'dosen' ? 'Dosen' : 'Mahasiswa';
-  document.getElementById('user-avatar').textContent = user.nama[0];
-  document.getElementById('user-avatar').style.background = user.color;
+  document.getElementById('user-role').textContent = user.role==='admin'?'Administrator':user.role==='dosen'?'Dosen':'Mahasiswa';
+  const av = document.getElementById('user-avatar');
+  av.textContent = user.nama[0];
+  av.style.background = user.color;
   buildNav();
   navigate('dashboard');
 }
@@ -521,958 +692,847 @@ function doLogout() {
   currentUser = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-alert').style.display = 'none';
 }
 
-function showAlert(id, msg, type='danger') {
+function showAlert(id, msg) {
   const el = document.getElementById(id);
-  el.textContent = msg;
-  el.className = 'alert alert-'+type;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 3000);
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => el.style.display='none', 3000);
 }
 
-// ========== NAVIGATION ==========
-const menus = {
+// ═══ NAV ═══
+const MENUS = {
   admin: [
-    { group:'Utama', items:[
-      { id:'dashboard', label:'Dashboard', icon:'📊' },
-      { id:'profile', label:'Profil', icon:'👤' },
-    ]},
-    { group:'Akademik', items:[
-      { id:'mahasiswa', label:'Data Mahasiswa', icon:'🎓' },
-      { id:'matakuliah', label:'Mata Kuliah', icon:'📚' },
-      { id:'nilai', label:'Manajemen Nilai', icon:'📝' },
-    ]},
-    { group:'Sistem', items:[
-      { id:'backup', label:'Backup & Restore', icon:'💾' },
-      { id:'arsitektur', label:'Arsitektur Cloud', icon:'☁️' },
-    ]},
+    { g:'Utama', items:[{id:'dashboard',l:'Dashboard'},{id:'profile',l:'Profil'}] },
+    { g:'Akademik', items:[{id:'mahasiswa',l:'Data Mahasiswa'},{id:'matakuliah',l:'Mata Kuliah'},{id:'nilai',l:'Manajemen Nilai'}] },
+    { g:'Sistem', items:[{id:'backup',l:'Backup & Restore'},{id:'arsitektur',l:'Arsitektur Cloud'}] },
   ],
   dosen: [
-    { group:'Utama', items:[
-      { id:'dashboard', label:'Dashboard', icon:'📊' },
-      { id:'profile', label:'Profil', icon:'👤' },
-    ]},
-    { group:'Pengajaran', items:[
-      { id:'mahasiswa', label:'Data Mahasiswa', icon:'🎓' },
-      { id:'matakuliah', label:'Mata Kuliah Saya', icon:'📚' },
-      { id:'nilai', label:'Input Nilai', icon:'📝' },
-    ]},
+    { g:'Utama', items:[{id:'dashboard',l:'Dashboard'},{id:'profile',l:'Profil'}] },
+    { g:'Pengajaran', items:[{id:'mahasiswa',l:'Data Mahasiswa'},{id:'matakuliah',l:'Mata Kuliah Saya'},{id:'nilai',l:'Input Nilai'}] },
   ],
   mahasiswa: [
-    { group:'Utama', items:[
-      { id:'dashboard', label:'Dashboard', icon:'📊' },
-      { id:'profile', label:'Profil Saya', icon:'👤' },
-    ]},
-    { group:'Akademik', items:[
-      { id:'nilai', label:'Nilai Saya', icon:'📝' },
-      { id:'matakuliah', label:'Mata Kuliah', icon:'📚' },
-      { id:'transkrip', label:'Transkrip', icon:'📄' },
-    ]},
+    { g:'Utama', items:[{id:'dashboard',l:'Dashboard'},{id:'profile',l:'Profil Saya'}] },
+    { g:'Akademik', items:[{id:'nilai',l:'Nilai Saya'},{id:'matakuliah',l:'Mata Kuliah'},{id:'transkrip',l:'Transkrip'}] },
   ]
 };
 
 function buildNav() {
-  const role = currentUser.role;
   const nav = document.getElementById('sidebar-nav');
   nav.innerHTML = '';
-  (menus[role] || menus.admin).forEach(group => {
-    nav.innerHTML += `<div class="nav-section">${group.group}</div>`;
-    group.items.forEach(item => {
+  (MENUS[currentUser.role]||MENUS.admin).forEach(grp => {
+    nav.innerHTML += `<div class="nav-section">${grp.g}</div>`;
+    grp.items.forEach(item => {
       nav.innerHTML += `<div class="nav-item" id="nav-${item.id}" onclick="navigate('${item.id}')">
-        <span class="icon">${item.icon}</span>${item.label}
+        ${ICONS[item.id]||''}<span>${item.l}</span><span class="nav-dot"></span>
       </div>`;
     });
   });
 }
 
+const PAGE_TITLES = {dashboard:'Dashboard',profile:'Profil',mahasiswa:'Data Mahasiswa',matakuliah:'Mata Kuliah',nilai:'Manajemen Nilai',backup:'Backup & Restore',arsitektur:'Arsitektur Cloud',transkrip:'Transkrip Nilai'};
+
 function navigate(page) {
-  currentPage = page;
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const navEl = document.getElementById('nav-'+page);
-  if (navEl) navEl.classList.add('active');
-  const titles = { dashboard:'Dashboard', profile:'Profil', mahasiswa:'Data Mahasiswa', matakuliah:'Mata Kuliah', nilai:'Manajemen Nilai', backup:'Backup & Restore', arsitektur:'Arsitektur Cloud', transkrip:'Transkrip Nilai' };
-  document.getElementById('page-title').textContent = titles[page] || page;
-  const fn = pages[page];
-  if (fn) document.getElementById('main-content').innerHTML = fn();
-  else document.getElementById('main-content').innerHTML = `<div class="card card-body" style="padding:40px;text-align:center">Halaman tidak tersedia</div>`;
-  if (page === 'arsitektur') initArsitektur();
+  const el = document.getElementById('nav-'+page);
+  if (el) el.classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_TITLES[page]||page;
+  const fn = PAGES[page];
+  document.getElementById('main-content').innerHTML = fn ? fn() : `<div class="card card-body" style="padding:40px;text-align:center;color:var(--text-muted)">Halaman tidak tersedia</div>`;
+  if (page==='arsitektur') setTimeout(drawArch,80);
 }
 
-// ========== HELPERS ==========
-function getGradeClass(g) {
-  if (!g) return 'g-e';
-  if (g.startsWith('A')) return 'g-a';
-  if (g.startsWith('B')) return 'g-b';
-  if (g.startsWith('C')) return 'g-c';
-  if (g.startsWith('D')) return 'g-d';
-  return 'g-e';
+// ═══ HELPERS ═══
+function gradeClass(g){
+  if(!g)return'g-e';
+  if(g[0]==='A')return'g-a';if(g[0]==='B')return'g-b';
+  if(g[0]==='C')return'g-c';if(g[0]==='D')return'g-d';return'g-e';
 }
-function calcGrade(na) {
-  if (na >= 85) return 'A';
-  if (na >= 80) return 'A-';
-  if (na >= 75) return 'B+';
-  if (na >= 70) return 'B';
-  if (na >= 65) return 'B-';
-  if (na >= 60) return 'C+';
-  if (na >= 55) return 'C';
-  if (na >= 50) return 'D';
-  return 'E';
+function calcGrade(na){
+  if(na>=85)return'A';if(na>=80)return'A-';if(na>=75)return'B+';
+  if(na>=70)return'B';if(na>=65)return'B-';if(na>=60)return'C+';
+  if(na>=55)return'C';if(na>=50)return'D';return'E';
 }
-function calcNA(row) {
-  return Math.round(row.uts * 0.30 + row.uas * 0.40 + row.tugas * 0.20 + row.hadir * 0.10);
-}
+function calcNA(r){return Math.round(r.uts*.3+r.uas*.4+r.tugas*.2+r.hadir*.1);}
+
+let toastTmr;
 function showToast(msg, type='success') {
+  clearTimeout(toastTmr);
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  const icons = {success:'check',danger:'x',info:'cloud',warning:'star'};
+  t.innerHTML = (ICONS[icons[type]]||'') + msg;
   t.className = 'toast-'+type;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 3000);
+  t.style.display = 'flex';
+  toastTmr = setTimeout(()=>t.style.display='none', 3000);
 }
 function openModal(html) {
   document.getElementById('modal-box').innerHTML = html;
   document.getElementById('modal-overlay').style.display = 'flex';
 }
 function closeModal(e) {
-  if (e.target === document.getElementById('modal-overlay') || !e)
-    document.getElementById('modal-overlay').style.display = 'none';
+  if (e.target===document.getElementById('modal-overlay')) closeModalBtn();
 }
-function closeModalBtn() {
-  document.getElementById('modal-overlay').style.display = 'none';
-}
+function closeModalBtn() { document.getElementById('modal-overlay').style.display='none'; }
 
-// ========== PAGES ==========
-const pages = {};
+// ═══════════════════════════════════════
+// PAGES
+// ═══════════════════════════════════════
+const PAGES = {};
 
-// DASHBOARD
-pages.dashboard = function() {
+// ── DASHBOARD ──
+PAGES.dashboard = function() {
   const role = currentUser.role;
-  const totalMhs = DB.mahasiswa.length;
-  const totalMk = DB.matakuliah.length;
-  const totalNilai = DB.nilai.length;
-  const rataIPK = (DB.mahasiswa.reduce((s,m) => s + m.ipk, 0) / DB.mahasiswa.length).toFixed(2);
-  const gradeCount = { A:0, B:0, C:0, D:0, E:0 };
-  DB.nilai.forEach(n => { const g = n.grade[0]; if (gradeCount[g] !== undefined) gradeCount[g]++; });
+  const total = DB.mahasiswa.length;
+  const aktif = DB.mahasiswa.filter(m=>m.status==='aktif').length;
+  const rataIPK = (DB.mahasiswa.reduce((s,m)=>s+m.ipk,0)/total).toFixed(2);
+  const gradeCount = {A:0,B:0,C:0,D:0,E:0};
+  DB.nilai.forEach(n=>{const g=n.grade[0];if(gradeCount[g]!==undefined)gradeCount[g]++;});
   const prodiCount = {};
-  DB.mahasiswa.forEach(m => { prodiCount[m.prodi] = (prodiCount[m.prodi]||0)+1; });
-  const maxBar = Math.max(...Object.values(gradeCount));
+  DB.mahasiswa.forEach(m=>{prodiCount[m.prodi]=(prodiCount[m.prodi]||0)+1;});
+  const maxBar = Math.max(...Object.values(gradeCount),1);
+  const barColors = {A:'#4a7c59',B:'#4a6b8c',C:'#8c6d3f',D:'#8c5a3f',E:'#8c4a4a'};
 
-  if (role === 'mahasiswa') {
-    const mhs = DB.mahasiswa.find(m => m.nim === currentUser.nim);
-    const nilaiMhs = DB.nilai.filter(n => n.nim === currentUser.nim);
-    return `
-    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
-      <div class="stat-card"><div class="stat-icon" style="background:#eff6ff;font-size:24px">📊</div><div><div class="stat-label">IPK</div><div class="stat-value">${mhs ? mhs.ipk : '-'}</div></div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#f0fdf4;font-size:24px">📚</div><div><div class="stat-label">Mata Kuliah</div><div class="stat-value">${nilaiMhs.length}</div></div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#faf5ff;font-size:24px">📝</div><div><div class="stat-label">Semester</div><div class="stat-value">${mhs ? mhs.semester : '-'}</div></div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#fff7ed;font-size:24px">🎓</div><div><div class="stat-label">Status</div><div class="stat-value" style="font-size:18px">${mhs ? mhs.status.toUpperCase() : '-'}</div></div></div>
+  if(role==='mahasiswa') {
+    const mhs = DB.mahasiswa.find(m=>m.nim===currentUser.nim);
+    const nm = DB.nilai.filter(n=>n.nim===currentUser.nim);
+    return `<div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+      ${[
+        [ICONS.chart,'IPK',mhs?.ipk??'-','Skala 4.0','#edf2f7','#4a6b8c'],
+        [ICONS.matakuliah,'Mata Kuliah',nm.length,'Diambil','#edf4f0','#4a7c59'],
+        [ICONS.nilai,'Semester','Sem '+(mhs?.semester??'-'),'Aktif','#f7f0e6','#8c6d3f'],
+        [ICONS.profile,'Status',(mhs?.status??'-').toUpperCase(),'','#f0ede8','#5c5c4a'],
+      ].map(([ic,l,v,sub,bg,c])=>`<div class="stat-card">
+        <div class="stat-icon-wrap" style="background:${bg}">${ic}</div>
+        <div><div class="stat-label">${l}</div><div class="stat-value" style="font-size:${v.toString().length>5?'18px':'26px'};color:${c}">${v}</div>${sub?`<div class="stat-sub">${sub}</div>`:''}</div>
+      </div>`).join('')}
     </div>
-    <div class="card"><div class="card-header"><div class="card-title">Nilai Terbaru</div></div>
+    <div class="card"><div class="card-header"><div class="card-title">${ICONS.nilai} Nilai Saya</div></div>
     <div class="table-wrap"><table><thead><tr><th>Mata Kuliah</th><th>UTS</th><th>UAS</th><th>Nilai Akhir</th><th>Grade</th></tr></thead><tbody>
-    ${nilaiMhs.length ? nilaiMhs.map(n => {
-      const mk = DB.matakuliah.find(m => m.kode === n.kode);
-      return `<tr><td>${mk ? mk.nama : n.kode}<br><small class="pill pill-blue" style="margin-top:4px">${n.kode}</small></td><td>${n.uts}</td><td>${n.uas}</td><td><b>${n.nilai_akhir}</b></td><td><span class="grade-cell ${getGradeClass(n.grade)}">${n.grade}</span></td></tr>`;
-    }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">Belum ada nilai</td></tr>'}
+    ${nm.length?nm.map(n=>{const mk=DB.matakuliah.find(m=>m.kode===n.kode);return`<tr>
+      <td><div class="fw-600">${mk?mk.nama:n.kode}</div><span class="pill pill-stone" style="margin-top:4px">${n.kode}</span></td>
+      <td>${n.uts}</td><td>${n.uas}</td><td class="fw-700">${n.nilai_akhir}</td>
+      <td><span class="grade-badge ${gradeClass(n.grade)}">${n.grade}</span></td>
+    </tr>`;}).join(''):`<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--text-muted)">Belum ada nilai tercatat</td></tr>`}
     </tbody></table></div></div>`;
   }
 
-  return `
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#eff6ff;font-size:24px">🎓</div>
-      <div><div class="stat-label">Total Mahasiswa</div><div class="stat-value">${totalMhs}</div><div class="stat-sub">${DB.mahasiswa.filter(m=>m.status==='aktif').length} aktif</div></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#f0fdf4;font-size:24px">📚</div>
-      <div><div class="stat-label">Mata Kuliah</div><div class="stat-value">${totalMk}</div><div class="stat-sub">${[...new Set(DB.matakuliah.map(m=>m.prodi))].length} program studi</div></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#faf5ff;font-size:24px">📝</div>
-      <div><div class="stat-label">Data Nilai</div><div class="stat-value">${totalNilai}</div><div class="stat-sub">entri terdaftar</div></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#fff7ed;font-size:24px">⭐</div>
-      <div><div class="stat-label">Rata-rata IPK</div><div class="stat-value">${rataIPK}</div><div class="stat-sub">dari skala 4.0</div></div>
-    </div>
+  return `<div class="stats-grid">
+    ${[
+      [ICONS.mahasiswa,'Total Mahasiswa',total,`${aktif} aktif · ${total-aktif} non-aktif`,'#edf4f0','#4a7c59'],
+      [ICONS.matakuliah,'Mata Kuliah',DB.matakuliah.length,[...new Set(DB.matakuliah.map(m=>m.prodi))].length+' prodi','#edf2f7','#4a6b8c'],
+      [ICONS.nilai,'Data Nilai',DB.nilai.length,'entri terdaftar','#f7f0e6','#8c6d3f'],
+      [ICONS.star,'Rata-rata IPK',rataIPK,'dari skala 4.0','#f0ede8','#5c5c4a'],
+    ].map(([ic,l,v,sub,bg,c])=>`<div class="stat-card">
+      <div class="stat-icon-wrap" style="background:${bg}">${ic}</div>
+      <div><div class="stat-label">${l}</div><div class="stat-value" style="color:${c}">${v}</div><div class="stat-sub">${sub}</div></div>
+    </div>`).join('')}
   </div>
-  <div class="grid-2 mb-24">
+
+  <div class="grid-2 mb-20">
     <div class="card">
-      <div class="card-header"><div class="card-title">📊 Distribusi Nilai</div></div>
+      <div class="card-header"><div class="card-title">${ICONS.chart} Distribusi Grade</div></div>
       <div class="card-body">
         <div class="bar-chart">
-          ${Object.entries(gradeCount).map(([g, c]) => {
-            const colors = { A:'#16a34a', B:'#2563eb', C:'#d97706', D:'#ea580c', E:'#dc2626' };
-            const h = maxBar ? Math.max(20, (c/maxBar)*130) : 20;
-            return `<div class="bar-wrap"><div class="bar-value">${c}</div><div class="bar" style="height:${h}px;background:${colors[g]};width:100%" title="Grade ${g}: ${c}"></div><div class="bar-label">${g}</div></div>`;
+          ${Object.entries(gradeCount).map(([g,c])=>{
+            const h=Math.max(16,(c/maxBar)*115);
+            return `<div class="bar-col">
+              <div class="bar-num">${c}</div>
+              <div class="bar-fill" style="height:${h}px;background:${barColors[g]};opacity:.85"></div>
+              <div class="bar-lbl">${g}</div>
+            </div>`;
           }).join('')}
         </div>
-        <div class="legend">
-          ${[['A','#16a34a'],['B','#2563eb'],['C','#d97706'],['D','#ea580c'],['E','#dc2626']].map(([g,c]) => `<div class="legend-item"><div class="legend-dot" style="background:${c}"></div>Grade ${g}</div>`).join('')}
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+          ${Object.entries(barColors).map(([g,c])=>`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted)">
+            <div style="width:8px;height:8px;border-radius:2px;background:${c};opacity:.85"></div>Grade ${g}
+          </div>`).join('')}
         </div>
       </div>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-title">🎓 Mahasiswa per Prodi</div></div>
+      <div class="card-header"><div class="card-title">${ICONS.mahasiswa} Mahasiswa per Prodi</div></div>
       <div class="card-body">
-        ${Object.entries(prodiCount).map(([p, c]) => {
-          const pct = Math.round(c/totalMhs*100);
-          return `<div style="margin-bottom:14px">
-            <div class="flex-between mb-16" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">${p}</span><span style="font-size:13px;color:var(--text-muted)">${c} (${pct}%)</span></div>
-            <div class="progress"><div class="progress-bar" style="width:${pct}%;background:var(--primary)"></div></div>
+        ${Object.entries(prodiCount).map(([p,c])=>{
+          const pct=Math.round(c/total*100);
+          return `<div style="margin-bottom:16px">
+            <div class="flex-between" style="margin-bottom:6px">
+              <span style="font-size:12.5px;font-weight:600">${p}</span>
+              <span class="text-sm text-muted">${c} (${pct}%)</span>
+            </div>
+            <div class="progress"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div>
           </div>`;
         }).join('')}
       </div>
     </div>
   </div>
+
   <div class="card">
     <div class="card-header">
-      <div class="card-title">🎓 Mahasiswa Terbaru</div>
-      <button class="btn btn-primary btn-sm" onclick="navigate('mahasiswa')">Lihat Semua</button>
+      <div class="card-title">${ICONS.mahasiswa} Daftar Mahasiswa</div>
+      <button class="btn btn-dark btn-sm" onclick="navigate('mahasiswa')">${ICONS.plus} Kelola</button>
     </div>
     <div class="table-wrap"><table><thead><tr><th>NIM</th><th>Nama</th><th>Program Studi</th><th>Semester</th><th>IPK</th><th>Status</th></tr></thead><tbody>
-    ${DB.mahasiswa.slice(0,4).map(m => `<tr>
-      <td><span class="pill pill-blue">${m.nim}</span></td>
-      <td><b>${m.nama}</b></td>
+    ${DB.mahasiswa.slice(0,5).map(m=>`<tr>
+      <td><span class="pill pill-stone">${m.nim}</span></td>
+      <td><div class="fw-600">${m.nama}</div><div class="text-sm text-muted">${m.email}</div></td>
       <td>${m.prodi}</td>
       <td>Sem ${m.semester}</td>
-      <td><b style="color:var(--primary)">${m.ipk}</b></td>
-      <td><span class="badge ${m.status==='aktif'?'badge-success':'badge-warning'}">${m.status}</span></td>
+      <td><span class="fw-700" style="color:var(--accent)">${m.ipk}</span></td>
+      <td><span class="badge ${m.status==='aktif'?'badge-success':'badge-warning'}">${m.status==='aktif'?ICONS.check:''} ${m.status}</span></td>
     </tr>`).join('')}
     </tbody></table></div>
   </div>`;
 };
 
-// MAHASISWA PAGE
-pages.mahasiswa = function() {
+// ── MAHASISWA ──
+PAGES.mahasiswa = function() {
   const canEdit = currentUser.role !== 'mahasiswa';
-  return `
-  <div class="search-bar">
-    <input class="search-input" id="mhs-search" placeholder="🔍  Cari mahasiswa (nama/NIM)..." oninput="filterMhs()">
-    <select class="search-input" id="mhs-prodi" style="max-width:200px" onchange="filterMhs()">
+  return `<div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon text-muted">${ICONS.search}</span>
+      <input class="form-input" id="mhs-q" placeholder="Cari mahasiswa (nama / NIM)…" oninput="filterMhs()">
+    </div>
+    <select class="filter-select" id="mhs-prodi" onchange="filterMhs()">
       <option value="">Semua Prodi</option>
-      ${[...new Set(DB.mahasiswa.map(m=>m.prodi))].map(p => `<option>${p}</option>`).join('')}
+      ${[...new Set(DB.mahasiswa.map(m=>m.prodi))].map(p=>`<option>${p}</option>`).join('')}
     </select>
-    ${canEdit ? `<button class="btn btn-primary" onclick="modalTambahMhs()">+ Tambah Mahasiswa</button>` : ''}
+    ${canEdit?`<button class="btn btn-dark" onclick="modalAddMhs()">${ICONS.plus} Tambah</button>`:''}
   </div>
-  <div class="card">
-    <div class="table-wrap"><table><thead><tr><th>NIM</th><th>Nama Lengkap</th><th>Program Studi</th><th>Sem</th><th>IPK</th><th>Status</th>${canEdit?'<th>Aksi</th>':''}</tr></thead>
-    <tbody id="mhs-table">
-    ${renderMhsRows(DB.mahasiswa, canEdit)}
-    </tbody></table></div>
-  </div>`;
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>NIM</th><th>Nama Lengkap</th><th>Program Studi</th><th>Sem</th><th>IPK</th><th>Status</th>${canEdit?'<th>Aksi</th>':''}</tr></thead>
+    <tbody id="mhs-body">${mhsRows(DB.mahasiswa,canEdit)}</tbody>
+  </table></div></div>`;
 };
 
-function renderMhsRows(data, canEdit) {
-  return data.map(m => `<tr>
-    <td><span class="pill pill-blue">${m.nim}</span></td>
-    <td><div style="font-weight:600">${m.nama}</div><div style="font-size:12px;color:var(--text-muted)">${m.email}</div></td>
-    <td><span class="pill pill-purple">${m.prodi}</span></td>
+function mhsRows(data,canEdit){
+  return data.map(m=>`<tr>
+    <td><span class="pill pill-stone">${m.nim}</span></td>
+    <td><div class="fw-600">${m.nama}</div><div class="text-sm text-muted">${m.email}</div></td>
+    <td><span class="pill pill-blue" style="font-size:11px">${m.prodi}</span></td>
     <td>Sem ${m.semester}</td>
-    <td><span style="font-weight:700;color:var(--primary)">${m.ipk}</span></td>
+    <td><span class="fw-700" style="color:var(--accent)">${m.ipk}</span></td>
     <td><span class="badge ${m.status==='aktif'?'badge-success':'badge-warning'}">${m.status}</span></td>
-    ${canEdit ? `<td><div class="actions">
-      <button class="btn btn-secondary btn-sm" onclick="modalDetailMhs('${m.nim}')">👁 Detail</button>
-      <button class="btn btn-primary btn-sm" onclick="modalEditMhs('${m.nim}')">✏ Edit</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteMhs('${m.nim}')">🗑</button>
-    </div></td>` : ''}
-  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted)">Tidak ada data</td></tr>';
+    ${canEdit?`<td><div class="actions">
+      <button class="btn btn-ghost btn-sm" onclick="modalViewMhs('${m.nim}')">${ICONS.eye} Detail</button>
+      <button class="btn btn-ghost btn-sm" onclick="modalEditMhs('${m.nim}')">${ICONS.edit} Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteMhs('${m.nim}')">${ICONS.trash}</button>
+    </div></td>`:''}
+  </tr>`).join('')||`<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text-muted)">Tidak ada data ditemukan</td></tr>`;
 }
 
-function filterMhs() {
-  const q = document.getElementById('mhs-search').value.toLowerCase();
-  const pr = document.getElementById('mhs-prodi').value;
-  const filtered = DB.mahasiswa.filter(m =>
-    (m.nama.toLowerCase().includes(q) || m.nim.includes(q)) && (!pr || m.prodi === pr)
+function filterMhs(){
+  const q=document.getElementById('mhs-q').value.toLowerCase();
+  const pr=document.getElementById('mhs-prodi').value;
+  document.getElementById('mhs-body').innerHTML = mhsRows(
+    DB.mahasiswa.filter(m=>(m.nama.toLowerCase().includes(q)||m.nim.includes(q))&&(!pr||m.prodi===pr)),
+    currentUser.role!=='mahasiswa'
   );
-  document.getElementById('mhs-table').innerHTML = renderMhsRows(filtered, currentUser.role !== 'mahasiswa');
 }
 
-function modalTambahMhs() {
-  openModal(`<div class="modal-header"><div class="modal-title">➕ Tambah Mahasiswa</div><button class="close-btn" onclick="closeModalBtn()">✕</button></div>
+function modalAddMhs(){
+  openModal(`<div class="modal-header"><div class="modal-title">${ICONS.plus} Tambah Mahasiswa</div><button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button></div>
   <div class="modal-body">
-    <div class="grid-2">
-      <div class="form-group"><label>NIM</label><input id="fm-nim" placeholder="Contoh: 2024010"></div>
-      <div class="form-group"><label>Nama Lengkap</label><input id="fm-nama" placeholder="Nama lengkap"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">NIM</label><input class="form-input" id="fm-nim" placeholder="2024010"></div>
+      <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" id="fm-nama" placeholder="Nama mahasiswa"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Program Studi</label><select id="fm-prodi">${[...new Set(DB.mahasiswa.map(m=>m.prodi))].map(p=>`<option>${p}</option>`).join('')}</select></div>
-      <div class="form-group"><label>Angkatan</label><input id="fm-angkatan" type="number" value="2024" min="2000" max="2099"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Program Studi</label><select class="form-input" id="fm-prodi">${[...new Set(DB.mahasiswa.map(m=>m.prodi))].map(p=>`<option>${p}</option>`).join('')}</select></div>
+      <div class="form-group"><label class="form-label">Angkatan</label><input class="form-input" id="fm-angk" type="number" value="2024"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Email</label><input id="fm-email" type="email" placeholder="email@student.ac.id"></div>
-      <div class="form-group"><label>No. Telepon</label><input id="fm-telp" placeholder="08xxxxxxxxxx"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="fm-email" type="email" placeholder="email@student.ac.id"></div>
+      <div class="form-group"><label class="form-label">No. Telepon</label><input class="form-input" id="fm-telp" placeholder="08xxxxxxxxxx"></div>
     </div>
-    <div class="form-group"><label>Alamat</label><input id="fm-alamat" placeholder="Alamat lengkap"></div>
+    <div class="form-group"><label class="form-label">Alamat</label><input class="form-input" id="fm-alamat" placeholder="Alamat lengkap"></div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-secondary" onclick="closeModalBtn()">Batal</button>
-    <button class="btn btn-primary" onclick="saveMhs()">💾 Simpan</button>
+    <button class="btn btn-ghost" onclick="closeModalBtn()">Batal</button>
+    <button class="btn btn-dark" onclick="saveMhs()">${ICONS.save} Simpan</button>
   </div>`);
 }
 
-function saveMhs() {
-  const nim = document.getElementById('fm-nim').value.trim();
-  const nama = document.getElementById('fm-nama').value.trim();
-  if (!nim || !nama) { alert('NIM dan Nama wajib diisi!'); return; }
-  if (DB.mahasiswa.find(m=>m.nim===nim)) { alert('NIM sudah terdaftar!'); return; }
-  DB.mahasiswa.push({
-    nim, nama, prodi: document.getElementById('fm-prodi').value,
-    angkatan: +document.getElementById('fm-angkatan').value,
-    semester: 1, email: document.getElementById('fm-email').value,
-    telp: document.getElementById('fm-telp').value, alamat: document.getElementById('fm-alamat').value,
-    ipk: 0, status: 'aktif'
-  });
-  closeModalBtn(); showToast('✅ Mahasiswa berhasil ditambahkan!');
-  navigate('mahasiswa');
+function saveMhs(){
+  const nim=document.getElementById('fm-nim').value.trim();
+  const nama=document.getElementById('fm-nama').value.trim();
+  if(!nim||!nama){showToast('NIM dan Nama wajib diisi','danger');return;}
+  if(DB.mahasiswa.find(m=>m.nim===nim)){showToast('NIM sudah terdaftar','danger');return;}
+  DB.mahasiswa.push({nim,nama,prodi:document.getElementById('fm-prodi').value,angkatan:+document.getElementById('fm-angk').value,semester:1,email:document.getElementById('fm-email').value,telp:document.getElementById('fm-telp').value,alamat:document.getElementById('fm-alamat').value,ipk:0,status:'aktif'});
+  closeModalBtn();showToast('Mahasiswa berhasil ditambahkan');navigate('mahasiswa');
 }
 
-function modalDetailMhs(nim) {
-  const m = DB.mahasiswa.find(x=>x.nim===nim);
-  const nilaiMhs = DB.nilai.filter(n=>n.nim===nim);
-  openModal(`<div class="modal-header"><div class="modal-title">👁 Detail Mahasiswa</div><button class="close-btn" onclick="closeModalBtn()">✕</button></div>
+function modalViewMhs(nim){
+  const m=DB.mahasiswa.find(x=>x.nim===nim);
+  const nm=DB.nilai.filter(n=>n.nim===nim);
+  openModal(`<div class="modal-header"><div class="modal-title">${ICONS.eye} Detail Mahasiswa</div><button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button></div>
   <div class="modal-body">
-    <div class="profile-header" style="border-radius:10px;margin-bottom:16px">
-      <div class="profile-avatar">${m.nama[0]}</div>
-      <div><div class="profile-name">${m.nama}</div><div class="profile-sub">${m.nim} · ${m.prodi}</div></div>
+    <div class="profile-hero" style="border-radius:10px;margin-bottom:16px">
+      <div class="profile-hero-avatar">${m.nama[0]}</div>
+      <div><div class="profile-hero-name">${m.nama}</div><div class="profile-hero-sub">${m.nim} · ${m.prodi}</div></div>
     </div>
-    <div class="grid-2" style="gap:10px;margin-bottom:16px">
-      ${[['📧 Email',m.email],['📱 Telepon',m.telp],['📅 Angkatan',m.angkatan],['📖 Semester',`Semester ${m.semester}`],['⭐ IPK',m.ipk],['🏷 Status',m.status.toUpperCase()]].map(([l,v])=>`<div style="background:var(--bg);border-radius:8px;padding:10px 14px"><div style="font-size:11px;color:var(--text-muted);font-weight:600">${l}</div><div style="font-weight:700;margin-top:2px">${v}</div></div>`).join('')}
+    <div class="grid-2 mb-16">
+      ${[['Email',m.email],['Telepon',m.telp],['Angkatan',m.angkatan],['Semester','Sem '+m.semester],['IPK',m.ipk],['Status',m.status.toUpperCase()]].map(([l,v])=>`
+      <div style="background:var(--bg);border-radius:8px;padding:10px 14px">
+        <div class="text-sm text-muted fw-600">${l}</div>
+        <div class="fw-700" style="margin-top:3px">${v}</div>
+      </div>`).join('')}
     </div>
     <div class="divider"></div>
-    <div style="font-weight:700;margin-bottom:8px">Riwayat Nilai (${nilaiMhs.length} mata kuliah)</div>
-    ${nilaiMhs.map(n=>{const mk=DB.matakuliah.find(m=>m.kode===n.kode);return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px"><span>${mk?mk.nama:n.kode}</span><span class="grade-cell ${getGradeClass(n.grade)}">${n.grade}</span></div>`;}).join('') || '<p style="color:var(--text-muted);font-size:13px">Belum ada nilai</p>'}
+    <div class="fw-700" style="margin-bottom:8px">Riwayat Nilai (${nm.length} MK)</div>
+    ${nm.map(n=>{const mk=DB.matakuliah.find(m=>m.kode===n.kode);return`<div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border)">
+      <span class="text-sm">${mk?mk.nama:n.kode}</span>
+      <span class="grade-badge ${gradeClass(n.grade)}">${n.grade}</span>
+    </div>`;}).join('')||`<p class="text-sm text-muted">Belum ada nilai</p>`}
   </div>`);
 }
 
-function modalEditMhs(nim) {
-  const m = DB.mahasiswa.find(x=>x.nim===nim);
-  openModal(`<div class="modal-header"><div class="modal-title">✏ Edit Mahasiswa</div><button class="close-btn" onclick="closeModalBtn()">✕</button></div>
+function modalEditMhs(nim){
+  const m=DB.mahasiswa.find(x=>x.nim===nim);
+  openModal(`<div class="modal-header"><div class="modal-title">${ICONS.edit} Edit Mahasiswa</div><button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button></div>
   <div class="modal-body">
-    <div class="grid-2">
-      <div class="form-group"><label>NIM</label><input value="${m.nim}" disabled style="background:#f3f4f6"></div>
-      <div class="form-group"><label>Nama</label><input id="em-nama" value="${m.nama}"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">NIM</label><input class="form-input" value="${m.nim}" disabled style="opacity:.6"></div>
+      <div class="form-group"><label class="form-label">Nama</label><input class="form-input" id="em-nama" value="${m.nama}"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Email</label><input id="em-email" value="${m.email}"></div>
-      <div class="form-group"><label>Telepon</label><input id="em-telp" value="${m.telp}"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="em-email" value="${m.email}"></div>
+      <div class="form-group"><label class="form-label">Telepon</label><input class="form-input" id="em-telp" value="${m.telp}"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Semester</label><input id="em-sem" type="number" value="${m.semester}" min="1" max="14"></div>
-      <div class="form-group"><label>Status</label><select id="em-status"><option ${m.status==='aktif'?'selected':''}>aktif</option><option ${m.status==='cuti'?'selected':''}>cuti</option><option ${m.status==='lulus'?'selected':''}>lulus</option></select></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Semester</label><input class="form-input" id="em-sem" type="number" value="${m.semester}" min="1" max="14"></div>
+      <div class="form-group"><label class="form-label">Status</label><select class="form-input" id="em-status"><option ${m.status==='aktif'?'selected':''}>aktif</option><option ${m.status==='cuti'?'selected':''}>cuti</option><option ${m.status==='lulus'?'selected':''}>lulus</option></select></div>
     </div>
-    <div class="form-group"><label>IPK</label><input id="em-ipk" type="number" step="0.01" min="0" max="4" value="${m.ipk}"></div>
+    <div class="form-group"><label class="form-label">IPK</label><input class="form-input" id="em-ipk" type="number" step="0.01" min="0" max="4" value="${m.ipk}"></div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-secondary" onclick="closeModalBtn()">Batal</button>
-    <button class="btn btn-primary" onclick="updateMhs('${nim}')">💾 Update</button>
+    <button class="btn btn-ghost" onclick="closeModalBtn()">Batal</button>
+    <button class="btn btn-dark" onclick="updateMhs('${nim}')">${ICONS.save} Simpan</button>
   </div>`);
 }
 
-function updateMhs(nim) {
-  const m = DB.mahasiswa.find(x=>x.nim===nim);
-  m.nama = document.getElementById('em-nama').value;
-  m.email = document.getElementById('em-email').value;
-  m.telp = document.getElementById('em-telp').value;
-  m.semester = +document.getElementById('em-sem').value;
-  m.status = document.getElementById('em-status').value;
-  m.ipk = +document.getElementById('em-ipk').value;
-  closeModalBtn(); showToast('✅ Data berhasil diperbarui!');
-  navigate('mahasiswa');
+function updateMhs(nim){
+  const m=DB.mahasiswa.find(x=>x.nim===nim);
+  m.nama=document.getElementById('em-nama').value;
+  m.email=document.getElementById('em-email').value;
+  m.telp=document.getElementById('em-telp').value;
+  m.semester=+document.getElementById('em-sem').value;
+  m.status=document.getElementById('em-status').value;
+  m.ipk=+document.getElementById('em-ipk').value;
+  closeModalBtn();showToast('Data berhasil diperbarui');navigate('mahasiswa');
 }
 
-function deleteMhs(nim) {
-  if (!confirm(`Hapus mahasiswa dengan NIM ${nim}?`)) return;
-  const idx = DB.mahasiswa.findIndex(m=>m.nim===nim);
-  DB.mahasiswa.splice(idx, 1);
-  showToast('🗑 Mahasiswa dihapus!', 'info');
-  navigate('mahasiswa');
+function deleteMhs(nim){
+  if(!confirm(`Hapus mahasiswa NIM ${nim}?`))return;
+  DB.mahasiswa.splice(DB.mahasiswa.findIndex(m=>m.nim===nim),1);
+  showToast('Mahasiswa dihapus','info');navigate('mahasiswa');
 }
 
-// MATAKULIAH PAGE
-pages.matakuliah = function() {
-  const canEdit = currentUser.role !== 'mahasiswa';
-  return `
-  <div class="search-bar">
-    <input class="search-input" id="mk-search" placeholder="🔍  Cari mata kuliah..." oninput="filterMK()">
-    <select class="search-input" id="mk-prodi" style="max-width:200px" onchange="filterMK()">
+// ── MATAKULIAH ──
+PAGES.matakuliah = function(){
+  const canEdit=currentUser.role!=='mahasiswa';
+  return `<div class="toolbar">
+    <div class="search-wrap"><span class="search-icon text-muted">${ICONS.search}</span>
+      <input class="form-input" id="mk-q" placeholder="Cari mata kuliah…" oninput="filterMK()"></div>
+    <select class="filter-select" id="mk-prodi" onchange="filterMK()">
       <option value="">Semua Prodi</option>
       ${[...new Set(DB.matakuliah.map(m=>m.prodi))].map(p=>`<option>${p}</option>`).join('')}
     </select>
-    ${canEdit ? `<button class="btn btn-primary" onclick="modalTambahMK()">+ Tambah Mata Kuliah</button>` : ''}
+    ${canEdit?`<button class="btn btn-dark" onclick="modalAddMK()">${ICONS.plus} Tambah</button>`:''}
   </div>
-  <div class="card">
-    <div class="table-wrap"><table><thead><tr><th>Kode</th><th>Nama Mata Kuliah</th><th>SKS</th><th>Program Studi</th><th>Dosen</th><th>Jadwal</th>${canEdit?'<th>Aksi</th>':''}</tr></thead>
-    <tbody id="mk-table">${renderMKRows(DB.matakuliah, canEdit)}</tbody></table></div>
-  </div>`;
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Kode</th><th>Nama Mata Kuliah</th><th>SKS</th><th>Prodi</th><th>Dosen</th><th>Jadwal</th>${canEdit?'<th>Aksi</th>':''}</tr></thead>
+    <tbody id="mk-body">${mkRows(DB.matakuliah,canEdit)}</tbody>
+  </table></div></div>`;
 };
 
-function renderMKRows(data, canEdit) {
-  return data.map(m => `<tr>
-    <td><span class="pill pill-orange">${m.kode}</span></td>
-    <td><b>${m.nama}</b></td>
+function mkRows(data,canEdit){
+  return data.map(m=>`<tr>
+    <td><span class="pill pill-amber">${m.kode}</span></td>
+    <td class="fw-600">${m.nama}</td>
     <td><span class="pill pill-blue">${m.sks} SKS</span></td>
     <td>${m.prodi}</td>
-    <td>${m.dosen}</td>
-    <td><span style="font-size:12px">${m.hari}, ${m.jam} · ${m.ruang}</span></td>
-    ${canEdit ? `<td><div class="actions">
-      <button class="btn btn-primary btn-sm" onclick="modalEditMK('${m.kode}')">✏ Edit</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteMK('${m.kode}')">🗑</button>
-    </div></td>` : ''}
-  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted)">Tidak ada data</td></tr>';
+    <td class="text-sm">${m.dosen}</td>
+    <td class="text-sm text-muted">${m.hari}, ${m.jam} · ${m.ruang}</td>
+    ${canEdit?`<td><div class="actions">
+      <button class="btn btn-ghost btn-sm" onclick="modalEditMK('${m.kode}')">${ICONS.edit} Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteMK('${m.kode}')">${ICONS.trash}</button>
+    </div></td>`:''}
+  </tr>`).join('')||`<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text-muted)">Tidak ada data</td></tr>`;
 }
 
-function filterMK() {
-  const q = document.getElementById('mk-search').value.toLowerCase();
-  const pr = document.getElementById('mk-prodi').value;
-  const filtered = DB.matakuliah.filter(m => (m.nama.toLowerCase().includes(q) || m.kode.toLowerCase().includes(q)) && (!pr || m.prodi === pr));
-  document.getElementById('mk-table').innerHTML = renderMKRows(filtered, currentUser.role !== 'mahasiswa');
+function filterMK(){
+  const q=document.getElementById('mk-q').value.toLowerCase();
+  const pr=document.getElementById('mk-prodi').value;
+  document.getElementById('mk-body').innerHTML=mkRows(DB.matakuliah.filter(m=>(m.nama.toLowerCase().includes(q)||m.kode.toLowerCase().includes(q))&&(!pr||m.prodi===pr)),currentUser.role!=='mahasiswa');
 }
 
-function modalTambahMK() {
-  openModal(`<div class="modal-header"><div class="modal-title">➕ Tambah Mata Kuliah</div><button class="close-btn" onclick="closeModalBtn()">✕</button></div>
+function modalAddMK(){
+  openModal(`<div class="modal-header"><div class="modal-title">${ICONS.plus} Tambah Mata Kuliah</div><button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button></div>
   <div class="modal-body">
-    <div class="grid-2">
-      <div class="form-group"><label>Kode MK</label><input id="mk-kode" placeholder="Contoh: TIF401"></div>
-      <div class="form-group"><label>Nama Mata Kuliah</label><input id="mk-nama" placeholder="Nama lengkap"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Kode MK</label><input class="form-input" id="mk-kode" placeholder="TIF401"></div>
+      <div class="form-group"><label class="form-label">Nama Mata Kuliah</label><input class="form-input" id="mk-nama" placeholder="Nama lengkap"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>SKS</label><input id="mk-sks" type="number" min="1" max="6" value="3"></div>
-      <div class="form-group"><label>Semester</label><input id="mk-semester" type="number" min="1" max="8" value="1"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">SKS</label><input class="form-input" id="mk-sks" type="number" min="1" max="6" value="3"></div>
+      <div class="form-group"><label class="form-label">Semester</label><input class="form-input" id="mk-sem" type="number" min="1" max="8" value="1"></div>
     </div>
-    <div class="form-group"><label>Program Studi</label><select id="mk-prodi2">${[...new Set(DB.matakuliah.map(m=>m.prodi))].map(p=>`<option>${p}</option>`).join('')}</select></div>
-    <div class="form-group"><label>Dosen Pengampu</label><input id="mk-dosen" placeholder="Nama dosen"></div>
-    <div class="grid-2">
-      <div class="form-group"><label>Hari</label><select id="mk-hari"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option></select></div>
-      <div class="form-group"><label>Jam Mulai</label><input id="mk-jam" type="time" value="08:00"></div>
+    <div class="form-group mb-16"><label class="form-label">Program Studi</label><select class="form-input" id="mk-prodi2">${[...new Set(DB.matakuliah.map(m=>m.prodi))].map(p=>`<option>${p}</option>`).join('')}</select></div>
+    <div class="form-group mb-16"><label class="form-label">Dosen Pengampu</label><input class="form-input" id="mk-dosen" placeholder="Nama dosen"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Hari</label><select class="form-input" id="mk-hari"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option></select></div>
+      <div class="form-group"><label class="form-label">Jam</label><input class="form-input" id="mk-jam" type="time" value="08:00"></div>
     </div>
-    <div class="form-group"><label>Ruangan</label><input id="mk-ruang" placeholder="Lab A / R-201"></div>
+    <div class="form-group"><label class="form-label">Ruangan</label><input class="form-input" id="mk-ruang" placeholder="Lab A / R-201"></div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-secondary" onclick="closeModalBtn()">Batal</button>
-    <button class="btn btn-primary" onclick="saveMK()">💾 Simpan</button>
+    <button class="btn btn-ghost" onclick="closeModalBtn()">Batal</button>
+    <button class="btn btn-dark" onclick="saveMK()">${ICONS.save} Simpan</button>
   </div>`);
 }
 
-function saveMK() {
-  const kode = document.getElementById('mk-kode').value.trim();
-  const nama = document.getElementById('mk-nama').value.trim();
-  if (!kode || !nama) { alert('Kode dan Nama wajib diisi!'); return; }
-  if (DB.matakuliah.find(m=>m.kode===kode)) { alert('Kode sudah ada!'); return; }
-  DB.matakuliah.push({
-    kode, nama, sks: +document.getElementById('mk-sks').value,
-    semester: +document.getElementById('mk-semester').value,
-    prodi: document.getElementById('mk-prodi2').value,
-    dosen: document.getElementById('mk-dosen').value,
-    hari: document.getElementById('mk-hari').value,
-    jam: document.getElementById('mk-jam').value,
-    ruang: document.getElementById('mk-ruang').value
-  });
-  closeModalBtn(); showToast('✅ Mata kuliah berhasil ditambahkan!');
-  navigate('matakuliah');
+function saveMK(){
+  const kode=document.getElementById('mk-kode').value.trim();
+  const nama=document.getElementById('mk-nama').value.trim();
+  if(!kode||!nama){showToast('Kode dan Nama wajib diisi','danger');return;}
+  if(DB.matakuliah.find(m=>m.kode===kode)){showToast('Kode sudah ada','danger');return;}
+  DB.matakuliah.push({kode,nama,sks:+document.getElementById('mk-sks').value,semester:+document.getElementById('mk-sem').value,prodi:document.getElementById('mk-prodi2').value,dosen:document.getElementById('mk-dosen').value,hari:document.getElementById('mk-hari').value,jam:document.getElementById('mk-jam').value,ruang:document.getElementById('mk-ruang').value});
+  closeModalBtn();showToast('Mata kuliah berhasil ditambahkan');navigate('matakuliah');
 }
 
-function modalEditMK(kode) {
-  const m = DB.matakuliah.find(x=>x.kode===kode);
-  openModal(`<div class="modal-header"><div class="modal-title">✏ Edit Mata Kuliah</div><button class="close-btn" onclick="closeModalBtn()">✕</button></div>
+function modalEditMK(kode){
+  const m=DB.matakuliah.find(x=>x.kode===kode);
+  openModal(`<div class="modal-header"><div class="modal-title">${ICONS.edit} Edit Mata Kuliah</div><button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button></div>
   <div class="modal-body">
-    <div class="grid-2">
-      <div class="form-group"><label>Kode</label><input value="${m.kode}" disabled style="background:#f3f4f6"></div>
-      <div class="form-group"><label>Nama</label><input id="emk-nama" value="${m.nama}"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Kode</label><input class="form-input" value="${m.kode}" disabled style="opacity:.6"></div>
+      <div class="form-group"><label class="form-label">Nama</label><input class="form-input" id="emk-nama" value="${m.nama}"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>SKS</label><input id="emk-sks" type="number" value="${m.sks}" min="1" max="6"></div>
-      <div class="form-group"><label>Semester</label><input id="emk-sem" type="number" value="${m.semester}" min="1" max="8"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">SKS</label><input class="form-input" id="emk-sks" type="number" value="${m.sks}" min="1" max="6"></div>
+      <div class="form-group"><label class="form-label">Semester</label><input class="form-input" id="emk-sem" type="number" value="${m.semester}" min="1" max="8"></div>
     </div>
-    <div class="form-group"><label>Dosen</label><input id="emk-dosen" value="${m.dosen}"></div>
-    <div class="grid-2">
-      <div class="form-group"><label>Hari</label><select id="emk-hari">${['Senin','Selasa','Rabu','Kamis','Jumat'].map(h=>`<option ${m.hari===h?'selected':''}>${h}</option>`).join('')}</select></div>
-      <div class="form-group"><label>Jam</label><input id="emk-jam" type="time" value="${m.jam}"></div>
+    <div class="form-group mb-16"><label class="form-label">Dosen</label><input class="form-input" id="emk-dosen" value="${m.dosen}"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Hari</label><select class="form-input" id="emk-hari">${['Senin','Selasa','Rabu','Kamis','Jumat'].map(h=>`<option ${m.hari===h?'selected':''}>${h}</option>`).join('')}</select></div>
+      <div class="form-group"><label class="form-label">Jam</label><input class="form-input" id="emk-jam" type="time" value="${m.jam}"></div>
     </div>
-    <div class="form-group"><label>Ruangan</label><input id="emk-ruang" value="${m.ruang}"></div>
+    <div class="form-group"><label class="form-label">Ruangan</label><input class="form-input" id="emk-ruang" value="${m.ruang}"></div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-secondary" onclick="closeModalBtn()">Batal</button>
-    <button class="btn btn-primary" onclick="updateMK('${kode}')">💾 Update</button>
+    <button class="btn btn-ghost" onclick="closeModalBtn()">Batal</button>
+    <button class="btn btn-dark" onclick="updateMK('${kode}')">${ICONS.save} Simpan</button>
   </div>`);
 }
 
-function updateMK(kode) {
-  const m = DB.matakuliah.find(x=>x.kode===kode);
-  m.nama = document.getElementById('emk-nama').value;
-  m.sks = +document.getElementById('emk-sks').value;
-  m.semester = +document.getElementById('emk-sem').value;
-  m.dosen = document.getElementById('emk-dosen').value;
-  m.hari = document.getElementById('emk-hari').value;
-  m.jam = document.getElementById('emk-jam').value;
-  m.ruang = document.getElementById('emk-ruang').value;
-  closeModalBtn(); showToast('✅ Mata kuliah diperbarui!');
-  navigate('matakuliah');
+function updateMK(kode){
+  const m=DB.matakuliah.find(x=>x.kode===kode);
+  m.nama=document.getElementById('emk-nama').value;m.sks=+document.getElementById('emk-sks').value;
+  m.semester=+document.getElementById('emk-sem').value;m.dosen=document.getElementById('emk-dosen').value;
+  m.hari=document.getElementById('emk-hari').value;m.jam=document.getElementById('emk-jam').value;
+  m.ruang=document.getElementById('emk-ruang').value;
+  closeModalBtn();showToast('Mata kuliah diperbarui');navigate('matakuliah');
 }
 
-function deleteMK(kode) {
-  if (!confirm(`Hapus mata kuliah ${kode}?`)) return;
-  const idx = DB.matakuliah.findIndex(m=>m.kode===kode);
-  DB.matakuliah.splice(idx, 1);
-  showToast('🗑 Mata kuliah dihapus!', 'info');
-  navigate('matakuliah');
+function deleteMK(kode){
+  if(!confirm(`Hapus mata kuliah ${kode}?`))return;
+  DB.matakuliah.splice(DB.matakuliah.findIndex(m=>m.kode===kode),1);
+  showToast('Mata kuliah dihapus','info');navigate('matakuliah');
 }
 
-// NILAI PAGE
-pages.nilai = function() {
-  const isMhs = currentUser.role === 'mahasiswa';
-  const nilaiData = isMhs ? DB.nilai.filter(n=>n.nim===currentUser.nim) : DB.nilai;
-  return `
-  <div class="search-bar">
-    ${!isMhs ? `<input class="search-input" id="n-search" placeholder="🔍  Cari berdasarkan NIM/nama..." oninput="filterNilai()">` : ''}
-    <select class="search-input" id="n-mk" style="max-width:220px" onchange="filterNilai()">
+// ── NILAI ──
+PAGES.nilai = function(){
+  const isMhs=currentUser.role==='mahasiswa';
+  return `<div class="toolbar">
+    ${!isMhs?`<div class="search-wrap"><span class="search-icon text-muted">${ICONS.search}</span><input class="form-input" id="n-q" placeholder="Cari NIM / nama…" oninput="filterNilai()"></div>`:''}
+    <select class="filter-select" id="n-mk" onchange="filterNilai()">
       <option value="">Semua Mata Kuliah</option>
       ${DB.matakuliah.map(m=>`<option value="${m.kode}">${m.nama}</option>`).join('')}
     </select>
-    ${!isMhs ? `<button class="btn btn-primary" onclick="modalInputNilai()">+ Input Nilai</button>` : ''}
+    ${!isMhs?`<button class="btn btn-dark" onclick="modalAddNilai()">${ICONS.plus} Input Nilai</button>`:''}
   </div>
-  <div class="card">
-    <div class="table-wrap"><table><thead><tr>${!isMhs?'<th>NIM</th><th>Mahasiswa</th>':''}<th>Mata Kuliah</th><th>UTS (30%)</th><th>UAS (40%)</th><th>Tugas (20%)</th><th>Hadir (10%)</th><th>Nilai Akhir</th><th>Grade</th>${!isMhs?'<th>Aksi</th>':''}</tr></thead>
-    <tbody id="nilai-table">${renderNilaiRows(nilaiData, isMhs)}</tbody></table></div>
-  </div>`;
+  <div class="card"><div class="table-wrap"><table>
+    <thead><tr>${!isMhs?'<th>NIM</th><th>Mahasiswa</th>':''}<th>Mata Kuliah</th><th>UTS</th><th>UAS</th><th>Tugas</th><th>Hadir</th><th>Nilai Akhir</th><th>Grade</th>${!isMhs?'<th>Aksi</th>':''}</tr></thead>
+    <tbody id="nilai-body">${nilaiRows(isMhs?DB.nilai.filter(n=>n.nim===currentUser.nim):DB.nilai,isMhs)}</tbody>
+  </table></div></div>`;
 };
 
-function renderNilaiRows(data, isMhs) {
-  return data.map(n => {
-    const mhs = DB.mahasiswa.find(m=>m.nim===n.nim);
-    const mk = DB.matakuliah.find(m=>m.kode===n.kode);
+function nilaiRows(data,isMhs){
+  return data.map(n=>{
+    const mhs=DB.mahasiswa.find(m=>m.nim===n.nim);
+    const mk=DB.matakuliah.find(m=>m.kode===n.kode);
     return `<tr>
-      ${!isMhs?`<td><span class="pill pill-blue">${n.nim}</span></td><td><b>${mhs?mhs.nama:'-'}</b></td>`:''}
+      ${!isMhs?`<td><span class="pill pill-stone">${n.nim}</span></td><td class="fw-600">${mhs?mhs.nama:'-'}</td>`:''}
       <td>${mk?mk.nama:n.kode}</td>
-      <td>${n.uts}</td><td>${n.uas}</td><td>${n.tugas}</td>
-      <td>${n.hadir}%</td>
-      <td><b style="font-size:15px">${n.nilai_akhir}</b></td>
-      <td><span class="grade-cell ${getGradeClass(n.grade)}">${n.grade}</span></td>
+      <td>${n.uts}</td><td>${n.uas}</td><td>${n.tugas}</td><td>${n.hadir}%</td>
+      <td><span class="fw-700" style="font-size:15px">${n.nilai_akhir}</span></td>
+      <td><span class="grade-badge ${gradeClass(n.grade)}">${n.grade}</span></td>
       ${!isMhs?`<td><div class="actions">
-        <button class="btn btn-primary btn-sm" onclick="modalEditNilai('${n.nim}','${n.kode}')">✏ Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteNilai('${n.nim}','${n.kode}')">🗑</button>
+        <button class="btn btn-ghost btn-sm" onclick="modalEditNilai('${n.nim}','${n.kode}')">${ICONS.edit}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteNilai('${n.nim}','${n.kode}')">${ICONS.trash}</button>
       </div></td>`:''}
     </tr>`;
-  }).join('') || '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-muted)">Tidak ada data nilai</td></tr>';
+  }).join('')||`<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--text-muted)">Tidak ada data nilai</td></tr>`;
 }
 
-function filterNilai() {
-  const isMhs = currentUser.role === 'mahasiswa';
-  const q = !isMhs && document.getElementById('n-search') ? document.getElementById('n-search').value.toLowerCase() : '';
-  const mk = document.getElementById('n-mk').value;
-  const filtered = DB.nilai.filter(n => {
-    if (isMhs && n.nim !== currentUser.nim) return false;
-    const mhs = DB.mahasiswa.find(m=>m.nim===n.nim);
-    const matchQ = !q || n.nim.includes(q) || (mhs && mhs.nama.toLowerCase().includes(q));
-    const matchMK = !mk || n.kode === mk;
-    return matchQ && matchMK;
+function filterNilai(){
+  const isMhs=currentUser.role==='mahasiswa';
+  const q=!isMhs&&document.getElementById('n-q')?document.getElementById('n-q').value.toLowerCase():'';
+  const mk=document.getElementById('n-mk').value;
+  const filtered=DB.nilai.filter(n=>{
+    if(isMhs&&n.nim!==currentUser.nim)return false;
+    const mhs=DB.mahasiswa.find(m=>m.nim===n.nim);
+    return(!q||n.nim.includes(q)||(mhs&&mhs.nama.toLowerCase().includes(q)))&&(!mk||n.kode===mk);
   });
-  document.getElementById('nilai-table').innerHTML = renderNilaiRows(filtered, isMhs);
+  document.getElementById('nilai-body').innerHTML=nilaiRows(filtered,isMhs);
 }
 
-function modalInputNilai() {
-  openModal(`<div class="modal-header"><div class="modal-title">📝 Input Nilai</div><button class="close-btn" onclick="closeModalBtn()">✕</button></div>
+function modalAddNilai(){
+  openModal(`<div class="modal-header"><div class="modal-title">${ICONS.nilai} Input Nilai</div><button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button></div>
   <div class="modal-body">
-    <div class="form-group"><label>Mahasiswa</label><select id="n-nim">
-      ${DB.mahasiswa.map(m=>`<option value="${m.nim}">${m.nim} - ${m.nama}</option>`).join('')}
-    </select></div>
-    <div class="form-group"><label>Mata Kuliah</label><select id="n-mk2">
-      ${DB.matakuliah.map(m=>`<option value="${m.kode}">${m.kode} - ${m.nama}</option>`).join('')}
-    </select></div>
-    <div class="grid-2">
-      <div class="form-group"><label>Nilai UTS (0-100)</label><input id="n-uts" type="number" min="0" max="100" value="75" oninput="previewNA()"></div>
-      <div class="form-group"><label>Nilai UAS (0-100)</label><input id="n-uas" type="number" min="0" max="100" value="80" oninput="previewNA()"></div>
+    <div class="form-group mb-16"><label class="form-label">Mahasiswa</label><select class="form-input" id="n-nim">${DB.mahasiswa.map(m=>`<option value="${m.nim}">${m.nim} — ${m.nama}</option>`).join('')}</select></div>
+    <div class="form-group mb-16"><label class="form-label">Mata Kuliah</label><select class="form-input" id="n-mk2">${DB.matakuliah.map(m=>`<option value="${m.kode}">${m.kode} — ${m.nama}</option>`).join('')}</select></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">UTS (30%)</label><input class="form-input" id="n-uts" type="number" min="0" max="100" value="75" oninput="prvNA()"></div>
+      <div class="form-group"><label class="form-label">UAS (40%)</label><input class="form-input" id="n-uas" type="number" min="0" max="100" value="80" oninput="prvNA()"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Tugas (0-100)</label><input id="n-tugas" type="number" min="0" max="100" value="85" oninput="previewNA()"></div>
-      <div class="form-group"><label>Kehadiran (0-100%)</label><input id="n-hadir" type="number" min="0" max="100" value="90" oninput="previewNA()"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Tugas (20%)</label><input class="form-input" id="n-tugas" type="number" min="0" max="100" value="85" oninput="prvNA()"></div>
+      <div class="form-group"><label class="form-label">Kehadiran (10%)</label><input class="form-input" id="n-hadir" type="number" min="0" max="100" value="90" oninput="prvNA()"></div>
     </div>
-    <div style="background:var(--primary-light);border-radius:10px;padding:14px;text-align:center;margin-top:4px">
-      <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:4px">PREVIEW NILAI AKHIR</div>
-      <div id="na-preview" style="font-size:32px;font-weight:900;color:var(--primary)">80</div>
-      <div id="grade-preview" style="font-size:18px;font-weight:700;margin-top:2px">B</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center">
+      <div class="text-sm text-muted fw-600" style="margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">Preview Nilai Akhir</div>
+      <div id="prv-val" style="font-size:38px;font-weight:900;color:var(--sidebar);letter-spacing:-1px">80</div>
+      <div id="prv-grade" style="font-size:16px;font-weight:700;margin-top:4px;color:var(--text2)">B</div>
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-secondary" onclick="closeModalBtn()">Batal</button>
-    <button class="btn btn-primary" onclick="saveNilai()">💾 Simpan</button>
+    <button class="btn btn-ghost" onclick="closeModalBtn()">Batal</button>
+    <button class="btn btn-dark" onclick="saveNilai()">${ICONS.save} Simpan</button>
   </div>`);
-  previewNA();
+  prvNA();
 }
 
-function previewNA() {
-  const uts = +document.getElementById('n-uts')?.value || 0;
-  const uas = +document.getElementById('n-uas')?.value || 0;
-  const tugas = +document.getElementById('n-tugas')?.value || 0;
-  const hadir = +document.getElementById('n-hadir')?.value || 0;
-  const na = Math.round(uts*0.3 + uas*0.4 + tugas*0.2 + hadir*0.1);
-  const grade = calcGrade(na);
-  if(document.getElementById('na-preview')) document.getElementById('na-preview').textContent = na;
-  if(document.getElementById('grade-preview')) document.getElementById('grade-preview').textContent = grade;
+function prvNA(){
+  const na=calcNA({uts:+document.getElementById('n-uts')?.value||0,uas:+document.getElementById('n-uas')?.value||0,tugas:+document.getElementById('n-tugas')?.value||0,hadir:+document.getElementById('n-hadir')?.value||0});
+  if(document.getElementById('prv-val'))document.getElementById('prv-val').textContent=na;
+  if(document.getElementById('prv-grade'))document.getElementById('prv-grade').textContent=calcGrade(na);
 }
 
-function saveNilai() {
-  const nim = document.getElementById('n-nim').value;
-  const kode = document.getElementById('n-mk2').value;
-  if (DB.nilai.find(n=>n.nim===nim&&n.kode===kode)) { alert('Nilai sudah ada! Edit data yang ada.'); return; }
-  const uts = +document.getElementById('n-uts').value;
-  const uas = +document.getElementById('n-uas').value;
-  const tugas = +document.getElementById('n-tugas').value;
-  const hadir = +document.getElementById('n-hadir').value;
-  const na = Math.round(uts*0.3 + uas*0.4 + tugas*0.2 + hadir*0.1);
-  DB.nilai.push({ nim, kode, uts, uas, tugas, hadir, nilai_akhir:na, grade:calcGrade(na) });
-  closeModalBtn(); showToast('✅ Nilai berhasil disimpan!');
-  navigate('nilai');
+function saveNilai(){
+  const nim=document.getElementById('n-nim').value;
+  const kode=document.getElementById('n-mk2').value;
+  if(DB.nilai.find(n=>n.nim===nim&&n.kode===kode)){showToast('Nilai sudah ada, gunakan Edit','danger');return;}
+  const uts=+document.getElementById('n-uts').value,uas=+document.getElementById('n-uas').value;
+  const tugas=+document.getElementById('n-tugas').value,hadir=+document.getElementById('n-hadir').value;
+  const na=calcNA({uts,uas,tugas,hadir});
+  DB.nilai.push({nim,kode,uts,uas,tugas,hadir,nilai_akhir:na,grade:calcGrade(na)});
+  closeModalBtn();showToast('Nilai berhasil disimpan');navigate('nilai');
 }
 
-function modalEditNilai(nim, kode) {
-  const n = DB.nilai.find(x=>x.nim===nim&&x.kode===kode);
-  const mhs = DB.mahasiswa.find(m=>m.nim===nim);
-  const mk = DB.matakuliah.find(m=>m.kode===kode);
-  openModal(`<div class="modal-header"><div class="modal-title">✏ Edit Nilai</div><button class="close-btn" onclick="closeModalBtn()">✕</button></div>
+function modalEditNilai(nim,kode){
+  const n=DB.nilai.find(x=>x.nim===nim&&x.kode===kode);
+  const mhs=DB.mahasiswa.find(m=>m.nim===nim);
+  const mk=DB.matakuliah.find(m=>m.kode===kode);
+  openModal(`<div class="modal-header"><div class="modal-title">${ICONS.edit} Edit Nilai</div><button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button></div>
   <div class="modal-body">
-    <div style="background:var(--bg);border-radius:8px;padding:12px 14px;margin-bottom:16px">
-      <b>${mhs?mhs.nama:nim}</b> · ${mk?mk.nama:kode}
+    <div style="background:var(--bg);border-radius:8px;padding:12px 14px;margin-bottom:16px" class="flex-between">
+      <div><div class="fw-700">${mhs?mhs.nama:nim}</div><div class="text-sm text-muted">${mk?mk.nama:kode}</div></div>
+      <span class="pill pill-stone">${nim}</span>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>UTS</label><input id="en-uts" type="number" min="0" max="100" value="${n.uts}" oninput="previewNA2()"></div>
-      <div class="form-group"><label>UAS</label><input id="en-uas" type="number" min="0" max="100" value="${n.uas}" oninput="previewNA2()"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">UTS</label><input class="form-input" id="en-uts" type="number" min="0" max="100" value="${n.uts}" oninput="prvNA2()"></div>
+      <div class="form-group"><label class="form-label">UAS</label><input class="form-input" id="en-uas" type="number" min="0" max="100" value="${n.uas}" oninput="prvNA2()"></div>
     </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Tugas</label><input id="en-tugas" type="number" min="0" max="100" value="${n.tugas}" oninput="previewNA2()"></div>
-      <div class="form-group"><label>Kehadiran %</label><input id="en-hadir" type="number" min="0" max="100" value="${n.hadir}" oninput="previewNA2()"></div>
+    <div class="grid-2 mb-16">
+      <div class="form-group"><label class="form-label">Tugas</label><input class="form-input" id="en-tugas" type="number" min="0" max="100" value="${n.tugas}" oninput="prvNA2()"></div>
+      <div class="form-group"><label class="form-label">Kehadiran %</label><input class="form-input" id="en-hadir" type="number" min="0" max="100" value="${n.hadir}" oninput="prvNA2()"></div>
     </div>
-    <div style="background:var(--primary-light);border-radius:10px;padding:14px;text-align:center">
-      <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:4px">NILAI AKHIR</div>
-      <div id="na-preview2" style="font-size:32px;font-weight:900;color:var(--primary)">${n.nilai_akhir}</div>
-      <div id="grade-preview2" style="font-size:18px;font-weight:700;margin-top:2px">${n.grade}</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center">
+      <div class="text-sm text-muted fw-600" style="margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Nilai Akhir</div>
+      <div id="prv-val2" style="font-size:38px;font-weight:900;color:var(--sidebar);letter-spacing:-1px">${n.nilai_akhir}</div>
+      <div id="prv-grade2" style="font-size:16px;font-weight:700;margin-top:4px;color:var(--text2)">${n.grade}</div>
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-secondary" onclick="closeModalBtn()">Batal</button>
-    <button class="btn btn-primary" onclick="updateNilai('${nim}','${kode}')">💾 Update</button>
+    <button class="btn btn-ghost" onclick="closeModalBtn()">Batal</button>
+    <button class="btn btn-dark" onclick="updateNilai('${nim}','${kode}')">${ICONS.save} Update</button>
   </div>`);
 }
 
-function previewNA2() {
-  const uts = +document.getElementById('en-uts')?.value||0;
-  const uas = +document.getElementById('en-uas')?.value||0;
-  const tugas = +document.getElementById('en-tugas')?.value||0;
-  const hadir = +document.getElementById('en-hadir')?.value||0;
-  const na = Math.round(uts*0.3+uas*0.4+tugas*0.2+hadir*0.1);
-  if(document.getElementById('na-preview2')) document.getElementById('na-preview2').textContent = na;
-  if(document.getElementById('grade-preview2')) document.getElementById('grade-preview2').textContent = calcGrade(na);
+function prvNA2(){
+  const na=calcNA({uts:+document.getElementById('en-uts')?.value||0,uas:+document.getElementById('en-uas')?.value||0,tugas:+document.getElementById('en-tugas')?.value||0,hadir:+document.getElementById('en-hadir')?.value||0});
+  if(document.getElementById('prv-val2'))document.getElementById('prv-val2').textContent=na;
+  if(document.getElementById('prv-grade2'))document.getElementById('prv-grade2').textContent=calcGrade(na);
 }
 
-function updateNilai(nim, kode) {
-  const n = DB.nilai.find(x=>x.nim===nim&&x.kode===kode);
-  n.uts = +document.getElementById('en-uts').value;
-  n.uas = +document.getElementById('en-uas').value;
-  n.tugas = +document.getElementById('en-tugas').value;
-  n.hadir = +document.getElementById('en-hadir').value;
-  n.nilai_akhir = Math.round(n.uts*0.3+n.uas*0.4+n.tugas*0.2+n.hadir*0.1);
-  n.grade = calcGrade(n.nilai_akhir);
-  closeModalBtn(); showToast('✅ Nilai berhasil diperbarui!');
-  navigate('nilai');
+function updateNilai(nim,kode){
+  const n=DB.nilai.find(x=>x.nim===nim&&x.kode===kode);
+  n.uts=+document.getElementById('en-uts').value;n.uas=+document.getElementById('en-uas').value;
+  n.tugas=+document.getElementById('en-tugas').value;n.hadir=+document.getElementById('en-hadir').value;
+  n.nilai_akhir=calcNA(n);n.grade=calcGrade(n.nilai_akhir);
+  closeModalBtn();showToast('Nilai berhasil diperbarui');navigate('nilai');
 }
 
-function deleteNilai(nim, kode) {
-  if (!confirm('Hapus data nilai ini?')) return;
-  const idx = DB.nilai.findIndex(n=>n.nim===nim&&n.kode===kode);
-  DB.nilai.splice(idx,1);
-  showToast('🗑 Nilai dihapus!', 'info');
-  navigate('nilai');
+function deleteNilai(nim,kode){
+  if(!confirm('Hapus data nilai ini?'))return;
+  DB.nilai.splice(DB.nilai.findIndex(n=>n.nim===nim&&n.kode===kode),1);
+  showToast('Nilai dihapus','info');navigate('nilai');
 }
 
-// PROFILE PAGE
-pages.profile = function() {
-  const u = currentUser;
-  const extra = u.role === 'mahasiswa' ? DB.mahasiswa.find(m=>m.nim===u.nim) : null;
+// ── PROFILE ──
+PAGES.profile = function(){
+  const u=currentUser;
+  const extra=u.role==='mahasiswa'?DB.mahasiswa.find(m=>m.nim===u.nim):null;
   return `<div class="card">
-    <div class="profile-header">
-      <div class="profile-avatar">${u.nama[0]}</div>
+    <div class="profile-hero">
+      <div class="profile-hero-avatar" style="background:${u.color||'#3a3a3a'}">${u.nama[0]}</div>
       <div>
-        <div class="profile-name">${u.nama}</div>
-        <div class="profile-sub">${u.role === 'admin' ? 'Administrator Sistem' : u.role === 'dosen' ? `Dosen · NIDN: ${u.nidn}` : `Mahasiswa · NIM: ${u.nim}`}</div>
+        <div class="profile-hero-name">${u.nama}</div>
+        <div class="profile-hero-sub">${u.role==='admin'?'Administrator Sistem':u.role==='dosen'?`Dosen · NIDN: ${u.nidn||'-'}`:`Mahasiswa · NIM: ${u.nim}`}</div>
       </div>
     </div>
     <div class="card-body">
-      <div class="grid-2 mb-24">
-        ${extra ? [
-          ['Program Studi', extra.prodi],
-          ['Angkatan', extra.angkatan],
-          ['Semester', `Semester ${extra.semester}`],
-          ['Status', extra.status.toUpperCase()],
-          ['Email', extra.email],
-          ['IPK', extra.ipk],
-        ].map(([l,v])=>`<div style="background:var(--bg);border-radius:8px;padding:12px 14px"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase">${l}</div><div style="font-weight:700;margin-top:4px;font-size:15px">${v}</div></div>`).join('') : ''}
+      ${extra?`<div class="grid-2 mb-20">
+        ${[['Program Studi',extra.prodi],['Angkatan',extra.angkatan],['Semester','Semester '+extra.semester],['Status',extra.status.toUpperCase()],['Email',extra.email],['IPK',extra.ipk]]
+        .map(([l,v])=>`<div style="background:var(--bg);border-radius:8px;padding:12px 14px">
+          <div class="text-sm text-muted fw-600" style="text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">${l}</div>
+          <div class="fw-700" style="font-size:14.5px">${v}</div>
+        </div>`).join('')}
+      </div><div class="divider"></div>`:''}
+      <div class="fw-700" style="margin-bottom:12px;display:flex;align-items:center;gap:6px">${ICONS.lock} Keamanan Akun</div>
+      <div class="grid-2 mb-16">
+        <div class="form-group"><label class="form-label">Password Baru</label><input class="form-input" type="password" placeholder="Biarkan kosong jika tidak diubah"></div>
+        <div class="form-group"><label class="form-label">Konfirmasi Password</label><input class="form-input" type="password" placeholder="Ulangi password baru"></div>
       </div>
-      <div class="divider"></div>
-      <div style="font-weight:700;margin-bottom:12px">🔒 Keamanan Akun</div>
-      <div class="form-group"><label>Password Baru</label><input type="password" placeholder="Biarkan kosong jika tidak diubah"></div>
-      <div class="form-group"><label>Konfirmasi Password</label><input type="password" placeholder="Ulangi password baru"></div>
-      <button class="btn btn-primary" onclick="showToast('✅ Profil diperbarui!')">💾 Simpan Perubahan</button>
+      <button class="btn btn-dark" onclick="showToast('Profil berhasil diperbarui')">${ICONS.save} Simpan Perubahan</button>
     </div>
   </div>`;
 };
 
-// TRANSKRIP PAGE
-pages.transkrip = function() {
-  const nim = currentUser.nim;
-  const mhs = DB.mahasiswa.find(m=>m.nim===nim) || {};
-  const nilaiMhs = DB.nilai.filter(n=>n.nim===nim);
-  const totalSKS = nilaiMhs.reduce((s,n)=>{const mk=DB.matakuliah.find(m=>m.kode===n.kode);return s+(mk?mk.sks:0);},0);
-  return `
-  <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
-    <button class="btn btn-primary" onclick="printTranskrip()">🖨 Cetak Transkrip</button>
-  </div>
-  <div class="card" id="transkrip-doc">
-    <div class="card-body">
-      <div class="transcript-header">
-        <div style="font-size:22px;margin-bottom:4px">🎓</div>
-        <h2>TRANSKRIP NILAI AKADEMIK</h2>
-        <div style="font-size:13px;color:var(--text-muted);margin-top:4px">Sistem Informasi Akademik — SIAKAD Cloud</div>
-      </div>
-      <div class="grid-2 mb-24">
-        ${[['Nama',mhs.nama||'-'],['NIM',nim],['Program Studi',mhs.prodi||'-'],['Semester',`Semester ${mhs.semester||'-'}`],['Angkatan',mhs.angkatan||'-'],['Status',mhs.status?.toUpperCase()||'-']].map(([l,v])=>`<div><span style="font-size:12px;color:var(--text-muted);font-weight:600">${l}:</span> <span style="font-weight:700">${v}</span></div>`).join('')}
-      </div>
-      <div class="table-wrap"><table><thead><tr><th>No</th><th>Kode</th><th>Mata Kuliah</th><th>SKS</th><th>Nilai</th><th>Grade</th><th>Bobot</th></tr></thead><tbody>
-      ${nilaiMhs.map((n,i)=>{
-        const mk=DB.matakuliah.find(m=>m.kode===n.kode);
-        const gradeBobot={'A':4,'A-':3.7,'B+':3.3,'B':3,'B-':2.7,'C+':2.3,'C':2,'D':1,'E':0};
-        const bobot=gradeBobot[n.grade]||0;
-        return `<tr><td>${i+1}</td><td><span class="pill pill-orange">${n.kode}</span></td><td>${mk?mk.nama:n.kode}</td><td>${mk?mk.sks:'-'}</td><td><b>${n.nilai_akhir}</b></td><td><span class="grade-cell ${getGradeClass(n.grade)}">${n.grade}</span></td><td>${bobot.toFixed(1)}</td></tr>`;
-      }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-muted)">Belum ada nilai</td></tr>'}
-      </tbody></table></div>
-      <div class="divider"></div>
-      <div style="display:flex;gap:24px;justify-content:flex-end;align-items:center">
-        <div style="text-align:center"><div class="gpa-label">TOTAL SKS</div><div style="font-size:32px;font-weight:900;color:var(--text)">${totalSKS}</div></div>
-        <div style="text-align:center"><div class="gpa-label">IPK</div><div class="gpa-display">${mhs.ipk||'0.00'}</div></div>
-      </div>
-    </div>
-  </div>`;
-};
-
-function printTranskrip() {
-  window.print();
-  showToast('🖨 Membuka dialog cetak...', 'info');
-}
-
-// BACKUP PAGE
-pages.backup = function() {
-  return `
-  <div class="grid-2 mb-24">
-    <div class="backup-card" onclick="doBackup('manual')">
-      <div class="backup-icon">💾</div>
-      <div style="font-weight:700;font-size:16px;margin-bottom:6px">Backup Manual Sekarang</div>
-      <div style="font-size:13px;color:var(--text-muted)">Buat snapshot database saat ini secara manual</div>
-      <button class="btn btn-primary" style="margin-top:14px">Mulai Backup</button>
-    </div>
-    <div class="card card-body" style="padding:24px">
-      <div style="font-weight:700;margin-bottom:14px">⚙ Jadwal Backup Otomatis</div>
-      <div class="form-group"><label>Frekuensi</label><select><option>Setiap hari (02:00)</option><option>Setiap 12 jam</option><option>Setiap minggu</option></select></div>
-      <div class="form-group"><label>Retensi Backup</label><select><option>7 hari terakhir</option><option>30 hari terakhir</option><option>Tanpa batas</option></select></div>
-      <div class="form-group" style="display:flex;align-items:center;gap:8px;margin-top:8px">
-        <input type="checkbox" id="auto-backup" checked style="width:auto">
-        <label for="auto-backup" style="font-weight:400">Aktifkan backup otomatis</label>
-      </div>
-      <button class="btn btn-success" onclick="showToast('✅ Pengaturan backup disimpan!')">💾 Simpan Pengaturan</button>
-    </div>
+// ── TRANSKRIP ──
+PAGES.transkrip = function(){
+  const nim=currentUser.nim;
+  const mhs=DB.mahasiswa.find(m=>m.nim===nim)||{};
+  const nm=DB.nilai.filter(n=>n.nim===nim);
+  const sks=nm.reduce((s,n)=>{const mk=DB.matakuliah.find(m=>m.kode===n.kode);return s+(mk?mk.sks:0);},0);
+  const gBobot={'A':4,'A-':3.7,'B+':3.3,'B':3,'B-':2.7,'C+':2.3,'C':2,'D':1,'E':0};
+  return `<div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+    <button class="btn btn-dark" onclick="window.print()">${ICONS.print} Cetak Transkrip</button>
   </div>
   <div class="card">
-    <div class="card-header">
-      <div class="card-title">📋 Riwayat Backup</div>
-      <div style="font-size:12px;color:var(--text-muted)">${DB.backups.length} backup tersedia</div>
-    </div>
-    <div class="backup-list" id="backup-list">
-      ${renderBackupList()}
-    </div>
-  </div>
-  <div class="card" style="margin-top:16px">
-    <div class="card-header"><div class="card-title">☁️ Konfigurasi Cloud Storage</div></div>
-    <div class="card-body grid-2">
-      <div class="form-group"><label>Provider</label><select><option>Google Cloud Storage</option><option>AWS S3</option><option>Azure Blob</option></select></div>
-      <div class="form-group"><label>Bucket / Container</label><input value="siakad-backups-prod" placeholder="nama-bucket"></div>
-      <div class="form-group"><label>Region</label><select><option>asia-southeast1 (Singapore)</option><option>us-east1</option><option>eu-west1</option></select></div>
-      <div class="form-group"><label>Enkripsi</label><select><option>AES-256 (Direkomendasikan)</option><option>AES-128</option></select></div>
+    <div class="card-body">
+      <div class="transkrip-header">
+        <div style="display:flex;justify-content:center;margin-bottom:10px">
+          <div style="width:52px;height:52px;background:var(--sidebar);border-radius:14px;display:flex;align-items:center;justify-content:center">
+            <svg width="26" height="26" viewBox="0 0 28 28" fill="none"><polygon points="14,4 26,10 14,16 2,10" fill="white"/><rect x="12.5" y="13" width="3" height="7" rx="1" fill="rgba(255,255,255,.6)"/></svg>
+          </div>
+        </div>
+        <div class="fw-700" style="font-size:18px;letter-spacing:-.3px">TRANSKRIP NILAI AKADEMIK</div>
+        <div class="text-sm text-muted" style="margin-top:4px">Sistem Informasi Akademik — SIAKAD Cloud</div>
+      </div>
+      <div class="grid-2 mb-20">
+        ${[['Nama',mhs.nama||'-'],['NIM',nim],['Program Studi',mhs.prodi||'-'],['Semester','Sem '+(mhs.semester||'-')],['Angkatan',mhs.angkatan||'-'],['Status',(mhs.status||'-').toUpperCase()]]
+        .map(([l,v])=>`<div><span class="text-sm text-muted fw-600">${l}:</span> <span class="fw-700">${v}</span></div>`).join('')}
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Kode</th><th>Mata Kuliah</th><th>SKS</th><th>Nilai</th><th>Grade</th><th>Bobot</th></tr></thead>
+        <tbody>${nm.map((n,i)=>{
+          const mk=DB.matakuliah.find(m=>m.kode===n.kode);
+          return`<tr><td class="text-muted">${i+1}</td><td><span class="pill pill-amber">${n.kode}</span></td><td>${mk?mk.nama:n.kode}</td><td>${mk?mk.sks:'-'}</td><td class="fw-700">${n.nilai_akhir}</td><td><span class="grade-badge ${gradeClass(n.grade)}">${n.grade}</span></td><td>${(gBobot[n.grade]||0).toFixed(1)}</td></tr>`;
+        }).join('')||`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted)">Belum ada nilai</td></tr>`}
+        </tbody>
+      </table></div>
+      <div class="divider"></div>
+      <div style="display:flex;gap:28px;justify-content:flex-end;align-items:center">
+        <div style="text-align:center">
+          <div class="text-sm text-muted fw-600" style="text-transform:uppercase;letter-spacing:.05em">Total SKS</div>
+          <div style="font-size:34px;font-weight:900;letter-spacing:-1px">${sks}</div>
+        </div>
+        <div style="text-align:center">
+          <div class="text-sm text-muted fw-600" style="text-transform:uppercase;letter-spacing:.05em">IPK</div>
+          <div class="transkrip-gpa">${mhs.ipk||'0.00'}</div>
+        </div>
+      </div>
     </div>
   </div>`;
 };
 
-function renderBackupList() {
-  return DB.backups.map(b => `<div class="backup-item">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="font-size:24px">${b.tipe==='otomatis'?'🤖':'👤'}</div>
-      <div>
-        <div style="font-weight:700;font-size:14px">${b.nama}</div>
-        <div style="font-size:12px;color:var(--text-muted)">${b.waktu} · ${b.ukuran}</div>
+// ── BACKUP ──
+PAGES.backup = function(){
+  return `<div class="grid-2 mb-20">
+    <div class="backup-drop" onclick="doBackup('manual')">
+      <div style="margin-bottom:14px">${`<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`}</div>
+      <div class="fw-700" style="font-size:15px;margin-bottom:6px">Backup Manual Sekarang</div>
+      <div class="text-sm text-muted" style="margin-bottom:14px">Buat snapshot database saat ini</div>
+      <button class="btn btn-dark btn-sm">${ICONS.download} Mulai Backup</button>
+    </div>
+    <div class="card card-body">
+      <div class="fw-700" style="margin-bottom:14px;display:flex;align-items:center;gap:6px">${ICONS.settings} Jadwal Otomatis</div>
+      <div class="form-group mb-16"><label class="form-label">Frekuensi</label><select class="form-input"><option>Setiap hari (02:00 WIB)</option><option>Setiap 12 jam</option><option>Setiap minggu</option></select></div>
+      <div class="form-group mb-16"><label class="form-label">Retensi Data</label><select class="form-input"><option>7 hari terakhir</option><option>30 hari terakhir</option><option>Tanpa batas</option></select></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <input type="checkbox" id="auto-bk" checked style="width:auto;accent-color:var(--accent)">
+        <label for="auto-bk" class="text-sm fw-600">Aktifkan backup otomatis</label>
       </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span class="badge badge-success">✅ ${b.status}</span>
-      <button class="btn btn-secondary btn-sm" onclick="doRestore('${b.id}')">↩ Restore</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteBackup('${b.id}')">🗑</button>
-    </div>
-  </div>`).join('');
-}
-
-function doBackup(tipe) {
-  showToast('⏳ Memproses backup...', 'info');
-  setTimeout(() => {
-    const now = new Date();
-    const ts = now.toISOString().replace('T',' ').substring(0,19);
-    DB.backups.unshift({ id:'bk'+Date.now(), nama:`Backup ${tipe==='manual'?'Manual':'Otomatis'}`, waktu:ts, ukuran:'2.5 MB', status:'sukses', tipe });
-    showToast('✅ Backup berhasil dibuat!');
-    navigate('backup');
-  }, 1500);
-}
-
-function doRestore(id) {
-  if (!confirm('Yakin ingin restore backup ini? Data saat ini akan digantikan.')) return;
-  showToast('⏳ Proses restore...', 'info');
-  setTimeout(() => showToast('✅ Restore berhasil!'), 2000);
-}
-
-function deleteBackup(id) {
-  if (!confirm('Hapus backup ini?')) return;
-  const idx = DB.backups.findIndex(b=>b.id===id);
-  DB.backups.splice(idx,1);
-  showToast('🗑 Backup dihapus!', 'info');
-  navigate('backup');
-}
-
-// ARSITEKTUR PAGE
-pages.arsitektur = function() {
-  return `
-  <div class="card mb-24">
-    <div class="card-header"><div class="card-title">☁️ Arsitektur Cloud SIAKAD</div><span class="badge badge-info">Google Cloud Platform</span></div>
-    <div class="card-body">
-      <canvas id="arch-canvas" width="800" height="420" style="width:100%;border-radius:8px;border:1px solid var(--border)"></canvas>
+      <button class="btn btn-success-soft" onclick="showToast('Pengaturan backup disimpan')">${ICONS.check} Simpan Pengaturan</button>
     </div>
   </div>
-  <div class="grid-3 mb-24">
+  <div class="card mb-20">
+    <div class="card-header">
+      <div class="card-title">${ICONS.backup} Riwayat Backup</div>
+      <span class="text-sm text-muted">${DB.backups.length} tersimpan</span>
+    </div>
+    <div id="bk-list">${bkRows()}</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">${ICONS.cloud} Konfigurasi Cloud Storage</div></div>
+    <div class="card-body grid-2">
+      <div class="form-group"><label class="form-label">Provider</label><select class="form-input"><option>Google Cloud Storage</option><option>AWS S3</option><option>Azure Blob Storage</option></select></div>
+      <div class="form-group"><label class="form-label">Bucket / Container</label><input class="form-input" value="siakad-backups-prod"></div>
+      <div class="form-group"><label class="form-label">Region</label><select class="form-input"><option>asia-southeast1 (Singapore)</option><option>us-east1 (N. Virginia)</option><option>eu-west1 (Ireland)</option></select></div>
+      <div class="form-group"><label class="form-label">Enkripsi</label><select class="form-input"><option>AES-256 (Rekomendasi)</option><option>AES-128</option></select></div>
+    </div>
+  </div>`;
+};
+
+function bkRows(){
+  return DB.backups.map(b=>`<div class="backup-list-item">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:38px;height:38px;background:var(--bg2);border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)">
+        ${b.tipe==='otomatis'?ICONS.robot:ICONS.person}
+      </div>
+      <div>
+        <div class="fw-700" style="font-size:13.5px">${b.nama}</div>
+        <div class="text-sm text-muted">${b.waktu} · ${b.ukuran}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <span class="badge badge-success">${ICONS.check} ${b.status}</span>
+      <button class="btn btn-ghost btn-sm" onclick="doRestore('${b.id}')">${ICONS.restore} Restore</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteBk('${b.id}')">${ICONS.trash}</button>
+    </div>
+  </div>`).join('')||`<div style="text-align:center;padding:24px;color:var(--text-muted)" class="text-sm">Belum ada backup tersimpan</div>`;
+}
+
+function doBackup(tipe){
+  showToast('Memproses backup…','info');
+  setTimeout(()=>{
+    const ts=new Date().toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'});
+    DB.backups.unshift({id:'bk'+Date.now(),nama:`Backup ${tipe==='manual'?'Manual':'Otomatis'}`,waktu:ts,ukuran:'2.5 MB',status:'sukses',tipe});
+    showToast('Backup berhasil dibuat');
+    document.getElementById('bk-list').innerHTML=bkRows();
+  },1400);
+}
+
+function doRestore(id){
+  if(!confirm('Restore backup ini? Data saat ini akan digantikan.'))return;
+  showToast('Memproses restore…','info');
+  setTimeout(()=>showToast('Restore berhasil'),2000);
+}
+
+function deleteBk(id){
+  if(!confirm('Hapus backup ini?'))return;
+  DB.backups.splice(DB.backups.findIndex(b=>b.id===id),1);
+  showToast('Backup dihapus','info');
+  document.getElementById('bk-list').innerHTML=bkRows();
+}
+
+// ── ARSITEKTUR ──
+PAGES.arsitektur = function(){
+  return `<div class="card mb-20">
+    <div class="card-header">
+      <div class="card-title">${ICONS.cloud} Arsitektur Cloud SIAKAD</div>
+      <span class="badge badge-info">Google Cloud Platform</span>
+    </div>
+    <div class="card-body">
+      <canvas id="arch-cv" width="760" height="380" style="width:100%;border-radius:8px;background:var(--bg);border:1px solid var(--border)"></canvas>
+    </div>
+  </div>
+  <div class="grid-3 mb-20">
     ${[
-      ['☁️','Hosting','Google Cloud Run','Kontainer serverless, auto-scaling, zero-downtime deployment. Region: asia-southeast1','#1a56db'],
-      ['🗄','Database','Cloud SQL (PostgreSQL)','Managed relational database, enkripsi at-rest AES-256, high availability dengan failover otomatis','#16a34a'],
-      ['💾','Storage','Cloud Storage','Penyimpanan file, backup otomatis, CDN global, lifecycle management untuk retensi data','#d97706'],
-      ['🔒','Keamanan','Firebase Auth + IAM','JWT authentication, role-based access control (RBAC), HTTPS/TLS 1.3, rate limiting','#7c3aed'],
-      ['📊','Monitoring','Cloud Monitoring + Logging','Uptime monitoring, error tracking, custom alerts, audit log untuk kepatuhan data','#0891b2'],
-      ['⚡','CDN','Cloud CDN','Cache layer global, load balancing, DDoS protection melalui Google Cloud Armor','#dc2626'],
-    ].map(([icon,title,sub,desc,color]) => `
-    <div class="card card-body" style="border-left:4px solid ${color}">
-      <div style="font-size:28px;margin-bottom:10px">${icon}</div>
-      <div style="font-weight:800;font-size:15px;margin-bottom:2px">${title}</div>
-      <div style="font-size:12px;color:${color};font-weight:700;margin-bottom:8px">${sub}</div>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.5">${desc}</div>
+      ['cloud','Hosting','Google Cloud Run','Serverless container, auto-scale, zero-downtime deploy. Region: asia-southeast1','var(--info-bg)','var(--info)'],
+      ['backup','Database','Cloud SQL PostgreSQL','Managed DB, HA failover, enkripsi AES-256, backup otomatis harian','var(--success-bg)','var(--success)'],
+      ['download','Storage','Cloud Storage','File & backup storage, CDN global, lifecycle management','var(--warning-bg)','var(--warning)'],
+      ['lock','Keamanan','Firebase Auth + IAM','JWT, RBAC 3 level, TLS 1.3, rate limiting, audit log','var(--bg2)','var(--accent)'],
+      ['chart','Monitoring','Cloud Monitoring','Uptime, error tracking, custom alerts, SLA 99.9%','var(--danger-bg)','var(--danger)'],
+      ['settings','CDN & WAF','Cloud CDN + Armor','Cache global, DDoS protection, IP filtering','var(--info-bg)','var(--info)'],
+    ].map(([ic,title,sub,desc,bg,c])=>`<div class="card card-body" style="border-top:3px solid ${c}">
+      <div style="width:40px;height:40px;background:${bg};border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">${ICONS[ic]}</div>
+      <div class="fw-700" style="font-size:14px;margin-bottom:2px">${title}</div>
+      <div style="font-size:11.5px;color:${c};font-weight:700;margin-bottom:8px">${sub}</div>
+      <div class="text-sm text-muted" style="line-height:1.55">${desc}</div>
     </div>`).join('')}
   </div>
   <div class="grid-2">
     <div class="card card-body">
-      <div style="font-weight:700;margin-bottom:12px">🔐 Implementasi Keamanan</div>
-      ${[
-        ['🔑','Authentication','JWT Token + Refresh Token (Firebase Auth)'],
-        ['👥','Authorization','RBAC: Admin, Dosen, Mahasiswa'],
-        ['🔒','Enkripsi Transport','HTTPS / TLS 1.3 (wajib)'],
-        ['🛡','Enkripsi Data','AES-256 at-rest (Cloud SQL + Storage)'],
-        ['🚦','Rate Limiting','100 req/menit per user (Cloud Armor)'],
-        ['📝','Audit Log','Semua aksi dicatat di Cloud Logging'],
-        ['🔍','Input Validation','Server-side + client-side validation'],
-        ['🌐','CORS Policy','Whitelist domain yang diizinkan'],
-      ].map(([i,l,v])=>`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px"><span>${i}</span><div><div style="font-weight:600">${l}</div><div style="color:var(--text-muted)">${v}</div></div></div>`).join('')}
+      <div class="fw-700" style="margin-bottom:12px;display:flex;align-items:center;gap:6px">${ICONS.lock} Implementasi Keamanan</div>
+      ${[['Authentication','JWT Token + Refresh Token (8 jam)'],['Authorization','RBAC: Admin · Dosen · Mahasiswa'],['Transport','HTTPS / TLS 1.3 mandatory'],['Enkripsi Data','AES-256 at-rest (GCS + Cloud SQL)'],['Rate Limiting','100 req/menit per user'],['Audit Log','Semua aksi tercatat Cloud Logging'],['Input Validation','Zod schema, server-side + client'],['CORS Policy','Whitelist domain terdaftar']].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);gap:10px">
+        <span class="text-sm fw-600">${l}</span>
+        <span class="text-sm text-muted" style="text-align:right">${v}</span>
+      </div>`).join('')}
     </div>
     <div class="card card-body">
-      <div style="font-weight:700;margin-bottom:12px">☁️ Deployment & CI/CD</div>
-      ${[
-        ['🔧','Source Code','GitHub Repository (private)'],
-        ['🏗','Build','Docker container image (multi-stage)'],
-        ['🚀','Deploy','GitHub Actions → Cloud Run (auto)'],
-        ['🌿','Environment','Dev, Staging, Production branches'],
-        ['🔄','Zero Downtime','Blue-green deployment'],
-        ['📦','Registry','Google Artifact Registry'],
-        ['🌍','Domain','Custom domain + SSL otomatis'],
-        ['💰','Cost Optimization','Auto-scale to zero saat idle'],
-      ].map(([i,l,v])=>`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px"><span>${i}</span><div><div style="font-weight:600">${l}</div><div style="color:var(--text-muted)">${v}</div></div></div>`).join('')}
+      <div class="fw-700" style="margin-bottom:12px;display:flex;align-items:center;gap:6px">${ICONS.settings} Deployment & CI/CD</div>
+      ${[['Source Code','GitHub (private repo)'],['Container','Docker multi-stage build'],['CI/CD','GitHub Actions → Cloud Run'],['Env','Dev · Staging · Production'],['Strategy','Blue-green, zero downtime'],['Registry','Google Artifact Registry'],['Domain','Custom domain + SSL auto'],['Cost','Auto-scale to zero saat idle']].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);gap:10px">
+        <span class="text-sm fw-600">${l}</span>
+        <span class="text-sm text-muted" style="text-align:right">${v}</span>
+      </div>`).join('')}
     </div>
   </div>`;
 };
 
-function initArsitektur() {
-  setTimeout(() => {
-    const canvas = document.getElementById('arch-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(0, 0, W, H);
+function drawArch(){
+  const cv=document.getElementById('arch-cv');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#f5f4f0';ctx.fillRect(0,0,W,H);
 
-    const boxes = [
-      { x:20, y:160, w:120, h:60, label:'👤 User', sub:'Browser/Mobile', color:'#e0f2fe', border:'#0891b2', text:'#0c4a6e' },
-      { x:180, y:60, w:130, h:55, label:'☁️ Cloud CDN', sub:'Global Cache', color:'#fef3c7', border:'#d97706', text:'#78350f' },
-      { x:180, y:145, w:130, h:55, label:'🛡 Cloud Armor', sub:'WAF/DDoS', color:'#fce7f3', border:'#db2777', text:'#831843' },
-      { x:180, y:235, w:130, h:55, label:'⚖ Load Balancer', sub:'Traffic Routing', color:'#ede9fe', border:'#7c3aed', text:'#4c1d95' },
-      { x:360, y:100, w:130, h:55, label:'🚀 Cloud Run', sub:'App Container', color:'#dbeafe', border:'#2563eb', text:'#1e3a8a' },
-      { x:360, y:175, w:130, h:55, label:'🔑 Firebase Auth', sub:'JWT / OAuth', color:'#fef3c7', border:'#f59e0b', text:'#78350f' },
-      { x:360, y:250, w:130, h:55, label:'🤖 Cloud Functions', sub:'Background Jobs', color:'#ecfdf5', border:'#16a34a', text:'#14532d' },
-      { x:550, y:80, w:130, h:55, label:'🗄 Cloud SQL', sub:'PostgreSQL HA', color:'#f0fdf4', border:'#16a34a', text:'#14532d' },
-      { x:550, y:160, w:130, h:55, label:'🔴 Memorystore', sub:'Redis Cache', color:'#fee2e2', border:'#dc2626', text:'#7f1d1d' },
-      { x:550, y:240, w:130, h:55, label:'💾 Cloud Storage', sub:'Files & Backup', color:'#e0f2fe', border:'#0891b2', text:'#0c4a6e' },
-      { x:360, y:345, w:130, h:50, label:'📊 Monitoring', sub:'Logs & Alerts', color:'#f5f3ff', border:'#7c3aed', text:'#4c1d95' },
-      { x:550, y:345, w:130, h:50, label:'🔔 Cloud Pub/Sub', sub:'Event Bus', color:'#fff7ed', border:'#ea580c', text:'#7c2d12' },
-    ];
+  const boxes=[
+    {x:16,y:155,w:110,h:52,l:'Pengguna',s:'Browser/Mobile',bg:'#edf2f7',bd:'#6b8fbf',tx:'#2d4a6e'},
+    {x:160,y:50,w:120,h:50,l:'Cloud CDN',s:'Cache Global',bg:'#f7f0e6',bd:'#a07840',tx:'#6b4e1a'},
+    {x:160,y:118,w:120,h:50,l:'Cloud Armor',s:'WAF / DDoS',bg:'#f7edec',bd:'#a06060',tx:'#6b2020'},
+    {x:160,y:188,w:120,h:50,l:'Load Balancer',s:'Traffic Routing',bg:'#f0ede8',bd:'#7a7a62',tx:'#4a4a3a'},
+    {x:322,y:80,w:118,h:50,l:'Cloud Run',s:'App Container',bg:'#edf2f7',bd:'#6b8fbf',tx:'#1e3a6a'},
+    {x:322,y:148,w:118,h:50,l:'Firebase Auth',s:'JWT / RBAC',bg:'#f7f0e6',bd:'#a09040',tx:'#6b4e10'},
+    {x:322,y:218,w:118,h:50,l:'Cloud Functions',s:'Background Jobs',bg:'#edf4f0',bd:'#5a8c6a',tx:'#1a4a2a'},
+    {x:482,y:60,w:118,h:50,l:'Cloud SQL',s:'PostgreSQL HA',bg:'#edf4f0',bd:'#5a8c6a',tx:'#1a4a2a'},
+    {x:482,y:128,w:118,h:50,l:'Memorystore',s:'Redis Cache',bg:'#f7edec',bd:'#a06060',tx:'#6b2020'},
+    {x:482,y:198,w:118,h:50,l:'Cloud Storage',s:'Files & Backup',bg:'#edf2f7',bd:'#6b8fbf',tx:'#1e3a6a'},
+    {x:322,y:300,w:118,h:46,l:'Monitoring',s:'Logs & Alerts',bg:'#f0ede8',bd:'#7a7a62',tx:'#4a4a3a'},
+    {x:482,y:300,w:118,h:46,l:'Pub/Sub',s:'Event Bus',bg:'#f7f0e6',bd:'#a07840',tx:'#6b4e1a'},
+  ];
 
-    function drawBox(b) {
-      ctx.save();
-      ctx.fillStyle = b.color;
-      ctx.strokeStyle = b.border;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(b.x, b.y, b.w, b.h, 10);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = b.text;
-      ctx.font = 'bold 13px system-ui';
-      ctx.textAlign = 'center';
-      ctx.fillText(b.label, b.x + b.w/2, b.y + b.h/2 - 7);
-      ctx.font = '11px system-ui';
-      ctx.fillStyle = b.text + 'aa';
-      ctx.fillText(b.sub, b.x + b.w/2, b.y + b.h/2 + 9);
-      ctx.restore();
-    }
+  // draw connections
+  const arcs=[[0,2],[0,1],[1,3],[2,3],[3,4],[3,5],[4,7],[4,8],[4,9],[4,6],[5,7],[6,10],[6,11],[7,10]];
+  ctx.strokeStyle='#c8c5be';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  arcs.forEach(([a,b])=>{
+    const s=boxes[a],t=boxes[b];
+    ctx.beginPath();ctx.moveTo(s.x+s.w/2,s.y+s.h/2);ctx.lineTo(t.x+t.w/2,t.y+t.h/2);ctx.stroke();
+  });
+  ctx.setLineDash([]);
 
-    const arrows = [
-      [0,2,'HTTPS'],[0,1,''],[2,3,''],[1,3,''],[3,4,'Request'],[3,5,''],[4,7,'Query'],[4,8,'Cache'],[4,9,''],[4,6,''],[5,7,'Verify'],[6,10,''],[6,11,''],[7,10,''],[11,10,''],
-    ];
+  // draw boxes
+  boxes.forEach(b=>{
+    ctx.save();
+    ctx.fillStyle=b.bg;ctx.strokeStyle=b.bd;ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(b.x,b.y,b.w,b.h,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle=b.tx;ctx.font='bold 11.5px Inter,system-ui';ctx.textAlign='center';
+    ctx.fillText(b.l,b.x+b.w/2,b.y+b.h/2-7);
+    ctx.font='10px Inter,system-ui';ctx.fillStyle=b.tx+'bb';
+    ctx.fillText(b.s,b.x+b.w/2,b.y+b.h/2+9);
+    ctx.restore();
+  });
 
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 3]);
-    arrows.forEach(([a, b]) => {
-      const s = boxes[a], t = boxes[b];
-      const sx = s.x + s.w/2, sy = s.y + s.h/2;
-      const tx = t.x + t.w/2, ty = t.y + t.h/2;
-      ctx.beginPath();
-      ctx.moveTo(sx, sy);
-      ctx.lineTo(tx, ty);
-      ctx.stroke();
-    });
-    ctx.setLineDash([]);
-
-    boxes.forEach(drawBox);
-
-    // Legend
-    ctx.font = '11px system-ui';
-    ctx.fillStyle = '#64748b';
-    ctx.textAlign = 'left';
-    ctx.fillText('--- = Koneksi layanan', 20, H - 10);
-  }, 100);
+  ctx.font='10px Inter,system-ui';ctx.fillStyle='#b0ae a6';ctx.textAlign='left';
+  ctx.fillText('--- = Koneksi antar layanan',16,H-10);
 }
 
-// INIT
-window.addEventListener('resize', () => {
-  const mobile = window.innerWidth < 768;
-  const btn = document.getElementById('menu-toggle');
-  if (btn) btn.style.display = mobile ? 'block' : 'none';
+// ═══ INIT ═══
+window.addEventListener('resize',()=>{
+  document.getElementById('mob-toggle').style.display=window.innerWidth<768?'flex':'none';
 });
 </script>
 </body>
