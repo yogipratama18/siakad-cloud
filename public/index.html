@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -619,66 +620,45 @@ function ico(name, extra='') {
 }
 
 // ═══════════════════════════════════════
-// API HELPER — semua baca/tulis data WAJIB lewat sini, bukan memodifikasi
-// DB.* secara langsung. DB.* hanya cache tampilan di sisi klien; sumber
-// kebenarannya selalu di server (MongoDB Atlas).
-// ═══════════════════════════════════════
-function authToken(){ return localStorage.getItem('siakad_token'); }
-
-async function api(method, url, body) {
-  const headers = { 'Content-Type': 'application/json' };
-  const token = authToken();
-  if (token) headers['Authorization'] = 'Bearer ' + token;
-
-  const opts = { method, headers };
-  if (body) opts.body = JSON.stringify(body);
-
-  const res = await fetch(url, opts);
-  let data = {};
-  try { data = await res.json(); } catch {}
-
-  if (res.status === 401) {
-    localStorage.removeItem('siakad_token');
-    localStorage.removeItem('siakad_user');
-    currentUser = null;
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('login-screen').style.display = 'flex';
-    throw new Error(data.error || 'Sesi berakhir, silakan login kembali');
-  }
-  if (!res.ok) throw new Error(data.error || 'Terjadi kesalahan');
-  return data;
-}
-
-async function loadAllData() {
-  const [mhs, mk, nilai, stats] = await Promise.all([
-    api('GET', '/api/mahasiswa'),
-    api('GET', '/api/matakuliah'),
-    api('GET', '/api/nilai'),
-    api('GET', '/api/stats'),
-  ]);
-  DB.mahasiswa = mhs;
-  DB.matakuliah = mk;
-  DB.nilai = nilai;
-  DB.stats = stats;
-  if (currentUser.role === 'admin') {
-    DB.backups = await api('GET', '/api/backup');
-  }
-}
-
-// ═══════════════════════════════════════
-// DATA STORE — cache di sisi klien, diisi dari API setelah login lewat
-// loadAllData(). TIDAK ADA lagi data contoh hardcoded di sini: sebelumnya
-// array ini berisi data tiruan dan seluruh fitur tambah/ubah/hapus hanya
-// memodifikasi array ini di memori browser — tidak pernah benar-benar
-// tersimpan ke server. Itulah sebab nilai yang diinput dosen tidak pernah
-// muncul di sisi mahasiswa.
+// DATA STORE
 // ═══════════════════════════════════════
 const DB = {
-  mahasiswa: [],
-  matakuliah: [],
-  nilai: [],
-  backups: [],
-  stats: null,
+  mahasiswa: [
+    { nim:'2024001', nama:'Ahmad Rizal Pratama', prodi:'Teknik Informatika', angkatan:2024, semester:2, email:'ahmad@student.ac.id', telp:'081234567890', alamat:'Jl. Merdeka No.1', ipk:3.75, status:'aktif' },
+    { nim:'2024002', nama:'Siti Rahayu Dewi', prodi:'Sistem Informasi', angkatan:2024, semester:2, email:'siti@student.ac.id', telp:'081298765432', alamat:'Jl. Sudirman No.5', ipk:3.82, status:'aktif' },
+    { nim:'2023001', nama:'Budi Santoso', prodi:'Teknik Informatika', angkatan:2023, semester:4, email:'budi@student.ac.id', telp:'081356789012', alamat:'Jl. Gatot Subroto 12', ipk:3.45, status:'aktif' },
+    { nim:'2023002', nama:'Dewi Anggraini', prodi:'Manajemen Informatika', angkatan:2023, semester:4, email:'dewi@student.ac.id', telp:'081367890123', alamat:'Jl. Pemuda 22', ipk:3.61, status:'aktif' },
+    { nim:'2022001', nama:'Eko Prasetyo', prodi:'Teknik Informatika', angkatan:2022, semester:6, email:'eko@student.ac.id', telp:'081445678901', alamat:'Jl. Diponegoro 8', ipk:3.28, status:'cuti' },
+    { nim:'2022002', nama:'Fitri Handayani', prodi:'Sistem Informasi', angkatan:2022, semester:6, email:'fitri@student.ac.id', telp:'081456789012', alamat:'Jl. Ahmad Yani 15', ipk:3.91, status:'aktif' },
+  ],
+  matakuliah: [
+    { kode:'TIF101', nama:'Algoritma & Pemrograman', sks:3, semester:1, dosen:'Dr. Hendra Wijaya', prodi:'Teknik Informatika', hari:'Senin', jam:'08:00', ruang:'Lab A' },
+    { kode:'TIF102', nama:'Matematika Diskrit', sks:3, semester:1, dosen:'Dr. Sri Mulyani', prodi:'Teknik Informatika', hari:'Selasa', jam:'10:00', ruang:'R-201' },
+    { kode:'TIF201', nama:'Struktur Data', sks:3, semester:3, dosen:'Prof. Ahmad Fauzi', prodi:'Teknik Informatika', hari:'Rabu', jam:'13:00', ruang:'Lab B' },
+    { kode:'TIF301', nama:'Basis Data', sks:3, semester:5, dosen:'Dr. Linda Sari', prodi:'Teknik Informatika', hari:'Kamis', jam:'09:00', ruang:'Lab A' },
+    { kode:'TIF302', nama:'Jaringan Komputer', sks:2, semester:5, dosen:'Dr. Hendra Wijaya', prodi:'Teknik Informatika', hari:'Jumat', jam:'10:00', ruang:'Lab C' },
+    { kode:'SI101', nama:'Sistem Informasi Manajemen', sks:3, semester:1, dosen:'Prof. Bambang S.', prodi:'Sistem Informasi', hari:'Senin', jam:'13:00', ruang:'R-301' },
+    { kode:'SI201', nama:'Analisis Sistem', sks:3, semester:3, dosen:'Dr. Linda Sari', prodi:'Sistem Informasi', hari:'Rabu', jam:'08:00', ruang:'R-202' },
+  ],
+  nilai: [
+    { nim:'2024001', kode:'TIF101', uts:78, uas:85, tugas:88, hadir:95, nilai_akhir:84, grade:'B+' },
+    { nim:'2024001', kode:'TIF102', uts:82, uas:90, tugas:85, hadir:100, nilai_akhir:87, grade:'A-' },
+    { nim:'2024002', kode:'SI101', uts:90, uas:92, tugas:95, hadir:98, nilai_akhir:92, grade:'A' },
+    { nim:'2023001', kode:'TIF201', uts:75, uas:80, tugas:82, hadir:90, nilai_akhir:79, grade:'B' },
+    { nim:'2023001', kode:'TIF301', uts:88, uas:85, tugas:90, hadir:95, nilai_akhir:87, grade:'A-' },
+    { nim:'2022002', kode:'TIF301', uts:92, uas:96, tugas:98, hadir:100, nilai_akhir:95, grade:'A' },
+    { nim:'2022002', kode:'TIF302', uts:89, uas:91, tugas:93, hadir:95, nilai_akhir:91, grade:'A' },
+  ],
+  backups: [
+    { id:'bk001', nama:'Backup Otomatis', waktu:'2025-01-21 02:00', ukuran:'2.4 MB', status:'sukses', tipe:'otomatis' },
+    { id:'bk002', nama:'Backup Manual', waktu:'2025-01-20 15:30', ukuran:'2.3 MB', status:'sukses', tipe:'manual' },
+    { id:'bk003', nama:'Backup Otomatis', waktu:'2025-01-20 02:00', ukuran:'2.3 MB', status:'sukses', tipe:'otomatis' },
+  ],
+  users: [
+    { id:'admin', pass:'admin123', role:'admin', nama:'Administrator', color:'#3a3a3a' },
+    { id:'dosen', pass:'dosen123', role:'dosen', nama:'Dr. Hendra Wijaya', nidn:'0123456789', color:'#4a5a4a' },
+    { id:'mahasiswa', pass:'mhs123', role:'mahasiswa', nama:'Ahmad Rizal Pratama', nim:'2024001', color:'#4a4a5a' },
+  ]
 };
 
 // ═══ AUTH ═══
