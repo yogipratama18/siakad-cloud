@@ -37,25 +37,38 @@ app.get('/debug-mahasiswa', async (req, res) => {
 app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(cors({ 
+  // Masukkan URL domain Vercel Anda di sini
   origin: 'https://siakad-cloud-rho.vercel.app', 
-  credentials: true 
+  credentials: true // Wajib true agar browser mau mengirim cookie/session lintas domain
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Wajib ditambahkan agar cookie secure bisa lewat di Vercel
-app.enable('trust proxy'); 
+// 1. Tambahkan baris ini sebelum session untuk mendeteksi apakah aplikasi berjalan di Vercel atau Lokal
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
+
+// 2. Jika di Vercel (Production), aktifkan trust proxy
+if (isProduction) {
+  app.enable('trust proxy');
+}
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'siakad-secret-key-2024-ganti-ini',
   resave: false,
   saveUninitialized: false,
   cookie: { 
-    secure: true, // Berubah jadi true karena sudah HTTPS
+    // JIKA DI LOKAL = false (karena http biasa)
+    // JIKA DI VERCEL = true (karena https)
+    secure: isProduction, 
+    
     httpOnly: true,
-    sameSite: 'none', // Ditambahkan agar mendukung cross-site cookie
-    maxAge: 8 * 60 * 60 * 1000 
+    
+    // JIKA DI LOKAL = 'lax' (standar browser agar cookie bisa disimpan)
+    // JIKA DI VERCEL = 'none' (agar bisa cross-domain jika front-end terpisah)
+    sameSite: isProduction ? 'none' : 'lax', 
+    
+    maxAge: 8 * 60 * 60 * 1000 // 8 jam
   }
 }));
 
