@@ -1,5 +1,6 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
+const connectDB = require("./db");
 
 const User = require("./models/user");
 const Mahasiswa = require("./models/mahasiswa");
@@ -17,16 +18,6 @@ const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-console.log("URI:", process.env.MONGODB_URI);
-mongoose.connect(process.env.MONGODB_URI)
-.then(() => {
-    console.log("✅ MongoDB Connected");
-})
-.catch((err) => {
-    console.error("❌ MongoDB Error:");
-    console.error(err);
-});
 
 app.get('/debug-mahasiswa', async (req, res) => {
   const data = await Mahasiswa.find();
@@ -73,12 +64,25 @@ app.use(session({
 }));
 
 // ===== AUTH MIDDLEWARE =====
-function requireAuth(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Silakan login terlebih dahulu' });
+app.get('/api/auth/me', async (req, res) => {
+  try {
+
+    await connectDB();
+
+    if (!req.session.user) {
+      return res.status(401).json({
+        error: 'Silakan login terlebih dahulu'
+      });
+    }
+
+    res.json(req.session.user);
+
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
   }
-  next();
-}
+});
 
 function requireRole(...roles) {
   return (req, res, next) => {
@@ -90,13 +94,25 @@ function requireRole(...roles) {
 }
 
 // ===== AUTH ROUTES =====
+console.log(
+  "MONGODB_URI exists:",
+  !!process.env.MONGODB_URI
+);
 app.post('/api/auth/login', async (req, res) => {
   try {
-    console.log("readyState:", mongoose.connection.readyState);
+
+    await connectDB();
+
+    console.log(
+      "readyState:",
+      mongoose.connection.readyState
+    );
 
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({
+      username
+    });
 
     if (!user) {
       return res.status(401).json({
@@ -104,7 +120,10 @@ app.post('/api/auth/login', async (req, res) => {
       });
     }
 
-    const valid = await bcrypt.compare(password, user.password);
+    const valid = await bcrypt.compare(
+      password,
+      user.password
+    );
 
     if (!valid) {
       return res.status(401).json({
@@ -128,6 +147,7 @@ app.post('/api/auth/login', async (req, res) => {
     });
 
   } catch (err) {
+
     console.error("LOGIN ERROR:", err);
 
     res.status(500).json({
