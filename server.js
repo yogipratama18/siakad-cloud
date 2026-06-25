@@ -91,18 +91,49 @@ function requireRole(...roles) {
 
 // ===== AUTH ROUTES =====
 app.post('/api/auth/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({
-  username
-});
-  
-  if (!user) return res.status(401).json({ error: 'Username atau password salah' });
-  
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return res.status(401).json({ error: 'Username atau password salah' });
-  
-  req.session.user = { id: user.id, username: user.username, role: user.role, nama: user.nama, nim: user.nim, nidn: user.nidn, color: user.color };
-  res.json({ success: true, user: req.session.user });
+  try {
+    console.log("readyState:", mongoose.connection.readyState);
+
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(401).json({
+        error: 'Username atau password salah'
+      });
+    }
+
+    const valid = await bcrypt.compare(password, user.password);
+
+    if (!valid) {
+      return res.status(401).json({
+        error: 'Username atau password salah'
+      });
+    }
+
+    req.session.user = {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      nama: user.nama,
+      nim: user.nim,
+      nidn: user.nidn,
+      color: user.color
+    };
+
+    res.json({
+      success: true,
+      user: req.session.user
+    });
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+
+    res.status(500).json({
+      error: err.message
+    });
+  }
 });
 
 app.post('/api/auth/logout', (req, res) => {
@@ -112,6 +143,9 @@ app.post('/api/auth/logout', (req, res) => {
 
 app.get('/api/auth/me', requireAuth, (req, res) => {
   res.json(req.session.user);
+
+  console.log("LOGIN SESSION ID:", req.sessionID);
+console.log("LOGIN USER:", req.session.user);
 });
 
 // ===== MAHASISWA ROUTES =====
