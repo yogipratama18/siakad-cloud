@@ -32,19 +32,30 @@ app.get('/debug-mahasiswa', async (req, res) => {
   const data = await Mahasiswa.find();
   res.json(data);
 });
+
 // ===== SECURITY MIDDLEWARE =====
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({ origin: true, credentials: true }));
+
+app.use(cors({ 
+  origin: 'https://siakad-cloud-rho.vercel.app', 
+  credentials: true 
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Wajib ditambahkan agar cookie secure bisa lewat di Vercel
+app.enable('trust proxy'); 
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'siakad-secret-key-2024-ganti-ini',
   resave: false,
   saveUninitialized: false,
   cookie: { 
-    secure: false, // set true jika pakai HTTPS
+    secure: true, // Berubah jadi true karena sudah HTTPS
     httpOnly: true,
-    maxAge: 8 * 60 * 60 * 1000 // 8 jam
+    sameSite: 'none', // Ditambahkan agar mendukung cross-site cookie
+    maxAge: 8 * 60 * 60 * 1000 
   }
 }));
 
