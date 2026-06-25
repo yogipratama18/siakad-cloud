@@ -1,3 +1,12 @@
+require("dotenv").config();
+const mongoose = require("mongoose");
+
+const User = require("./models/user");
+const Mahasiswa = require("./models/mahasiswa");
+const Matakuliah = require("./models/matakuliah");
+const Nilai = require("./models/nilai");
+const Backup = require("./models/backup");
+
 const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet');
@@ -8,6 +17,16 @@ const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+console.log("URI:", process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => {
+    console.log("✅ MongoDB Connected");
+})
+.catch((err) => {
+    console.error("❌ MongoDB Error:");
+    console.error(err);
+});
 
 // ===== SECURITY MIDDLEWARE =====
 app.use(helmet({ contentSecurityPolicy: false }));
@@ -24,18 +43,6 @@ app.use(session({
     maxAge: 8 * 60 * 60 * 1000 // 8 jam
   }
 }));
-
-// ===== DATABASE HELPER =====
-const DB_PATH = path.join(__dirname, 'data', 'db.json');
-
-function readDB() {
-  const raw = fs.readFileSync(DB_PATH, 'utf-8');
-  return JSON.parse(raw);
-}
-
-function writeDB(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
-}
 
 // ===== AUTH MIDDLEWARE =====
 function requireAuth(req, res, next) {
@@ -57,8 +64,9 @@ function requireRole(...roles) {
 // ===== AUTH ROUTES =====
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
-  const db = readDB();
-  const user = db.users.find(u => u.username === username);
+  const user = await User.findOne({
+  username
+});
   
   if (!user) return res.status(401).json({ error: 'Username atau password salah' });
   
@@ -79,119 +87,340 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
 });
 
 // ===== MAHASISWA ROUTES =====
-app.get('/api/mahasiswa', requireAuth, (req, res) => {
-  const db = readDB();
-  if (req.session.user.role === 'mahasiswa') {
-    const mhs = db.mahasiswa.find(m => m.nim === req.session.user.nim);
-    return res.json(mhs ? [mhs] : []);
+app.get('/api/mahasiswa', requireAuth, async (req, res) => {
+  try {
+    if (req.session.user.role === 'mahasiswa') {
+      const mhs = await Mahasiswa.findOne({
+        nim: req.session.user.nim
+      });
+
+      return res.json(mhs ? [mhs] : []);
+    }
+
+    const mahasiswa = await Mahasiswa.find();
+    res.json(mahasiswa);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  res.json(db.mahasiswa);
 });
 
-app.post('/api/mahasiswa', requireAuth, requireRole('admin'), (req, res) => {
-  const db = readDB();
-  const { nim, nama, prodi, angkatan, semester, email, telp, alamat } = req.body;
-  if (!nim || !nama) return res.status(400).json({ error: 'NIM dan Nama wajib diisi' });
-  if (db.mahasiswa.find(m => m.nim === nim)) return res.status(400).json({ error: 'NIM sudah terdaftar' });
-  
-  const newMhs = { nim, nama, prodi, angkatan: +angkatan, semester: +(semester||1), email, telp, alamat, ipk: 0, status: 'aktif' };
-  db.mahasiswa.push(newMhs);
-  writeDB(db);
-  res.json({ success: true, data: newMhs });
+app.post('/api/mahasiswa', requireAuth, requireRole('admin'), async (req, res) => {
+  try {
+
+    const existing = await Mahasiswa.findOne({
+      nim: req.body.nim
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        error: 'NIM sudah terdaftar'
+      });
+    }
+
+    const mahasiswa = await Mahasiswa.create({
+      ...req.body,
+      semester: Number(req.body.semester || 1),
+      angkatan: Number(req.body.angkatan),
+      ipk: 0,
+      status: 'aktif'
+    });
+
+    res.json({
+      success: true,
+      data: mahasiswa
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.put('/api/mahasiswa/:nim', requireAuth, requireRole('admin', 'dosen'), (req, res) => {
-  const db = readDB();
-  const idx = db.mahasiswa.findIndex(m => m.nim === req.params.nim);
-  if (idx === -1) return res.status(404).json({ error: 'Mahasiswa tidak ditemukan' });
-  db.mahasiswa[idx] = { ...db.mahasiswa[idx], ...req.body };
-  writeDB(db);
-  res.json({ success: true, data: db.mahasiswa[idx] });
+app.put('/api/mahasiswa/:nim', requireAuth, requireRole('admin','dosen'), async (req,res)=>{
+  try {
+
+    const mahasiswa = await Mahasiswa.findOneAndUpdate(
+      { nim: req.params.nim },
+      req.body,
+      { new:true }
+    );
+
+    if (!mahasiswa) {
+      return res.status(404).json({
+        error:'Mahasiswa tidak ditemukan'
+      });
+    }
+
+    res.json({
+      success:true,
+      data: mahasiswa
+    });
+
+  } catch(err){
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.delete('/api/mahasiswa/:nim', requireAuth, requireRole('admin'), (req, res) => {
-  const db = readDB();
-  const idx = db.mahasiswa.findIndex(m => m.nim === req.params.nim);
-  if (idx === -1) return res.status(404).json({ error: 'Tidak ditemukan' });
-  db.mahasiswa.splice(idx, 1);
-  writeDB(db);
-  res.json({ success: true });
+app.delete('/api/mahasiswa/:nim', requireAuth, requireRole('admin'), async (req,res)=>{
+  try {
+
+    await Mahasiswa.deleteOne({
+      nim:req.params.nim
+    });
+
+    res.json({ success:true });
+
+  } catch(err){
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ===== MATAKULIAH ROUTES =====
-app.get('/api/matakuliah', requireAuth, (req, res) => {
-  const db = readDB();
-  res.json(db.matakuliah);
+app.get('/api/matakuliah', requireAuth, async (req, res) => {
+  try {
+
+    const data = await Matakuliah.find();
+
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
+  }
 });
 
-app.post('/api/matakuliah', requireAuth, requireRole('admin'), (req, res) => {
-  const db = readDB();
-  const { kode, nama } = req.body;
-  if (!kode || !nama) return res.status(400).json({ error: 'Kode dan Nama wajib diisi' });
-  if (db.matakuliah.find(m => m.kode === kode)) return res.status(400).json({ error: 'Kode sudah ada' });
-  db.matakuliah.push({ ...req.body, sks: +req.body.sks, semester: +req.body.semester });
-  writeDB(db);
-  res.json({ success: true });
+app.post('/api/matakuliah',
+  requireAuth,
+  requireRole('admin'),
+  async (req, res) => {
+
+    try {
+
+      const exist = await Matakuliah.findOne({
+        kode: req.body.kode
+      });
+
+      if (exist) {
+        return res.status(400).json({
+          error: 'Kode sudah ada'
+        });
+      }
+
+      const mk = await Matakuliah.create({
+        ...req.body,
+        sks: Number(req.body.sks),
+        semester: Number(req.body.semester)
+      });
+
+      res.json({
+        success: true,
+        data: mk
+      });
+
+    } catch (err) {
+      res.status(500).json({
+        error: err.message
+      });
+    }
 });
 
-app.put('/api/matakuliah/:kode', requireAuth, requireRole('admin', 'dosen'), (req, res) => {
-  const db = readDB();
-  const idx = db.matakuliah.findIndex(m => m.kode === req.params.kode);
-  if (idx === -1) return res.status(404).json({ error: 'Tidak ditemukan' });
-  db.matakuliah[idx] = { ...db.matakuliah[idx], ...req.body };
-  writeDB(db);
-  res.json({ success: true, data: db.matakuliah[idx] });
+app.put('/api/matakuliah/:kode',
+  requireAuth,
+  requireRole('admin','dosen'),
+  async (req, res) => {
+
+    try {
+
+      const mk = await Matakuliah.findOneAndUpdate(
+        { kode: req.params.kode },
+        req.body,
+        { new: true }
+      );
+
+      if (!mk) {
+        return res.status(404).json({
+          error: 'Tidak ditemukan'
+        });
+      }
+
+      res.json({
+        success: true,
+        data: mk
+      });
+
+    } catch (err) {
+      res.status(500).json({
+        error: err.message
+      });
+    }
 });
 
-app.delete('/api/matakuliah/:kode', requireAuth, requireRole('admin'), (req, res) => {
-  const db = readDB();
-  const idx = db.matakuliah.findIndex(m => m.kode === req.params.kode);
-  if (idx === -1) return res.status(404).json({ error: 'Tidak ditemukan' });
-  db.matakuliah.splice(idx, 1);
-  writeDB(db);
-  res.json({ success: true });
+app.delete('/api/matakuliah/:kode',
+  requireAuth,
+  requireRole('admin'),
+  async (req, res) => {
+
+    try {
+
+      await Matakuliah.deleteOne({
+        kode: req.params.kode
+      });
+
+      res.json({
+        success: true
+      });
+
+    } catch (err) {
+      res.status(500).json({
+        error: err.message
+      });
+    }
 });
 
 // ===== NILAI ROUTES =====
-app.get('/api/nilai', requireAuth, (req, res) => {
-  const db = readDB();
-  if (req.session.user.role === 'mahasiswa') {
-    return res.json(db.nilai.filter(n => n.nim === req.session.user.nim));
+app.get('/api/nilai', requireAuth, async (req, res) => {
+  try {
+
+    if (req.session.user.role === 'mahasiswa') {
+
+      const nilai = await Nilai.find({
+        nim: req.session.user.nim
+      });
+
+      return res.json(nilai);
+    }
+
+    const nilai = await Nilai.find();
+
+    res.json(nilai);
+
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
   }
-  res.json(db.nilai);
 });
 
-app.post('/api/nilai', requireAuth, requireRole('admin', 'dosen'), (req, res) => {
-  const db = readDB();
-  const { nim, kode, uts, uas, tugas, hadir } = req.body;
-  if (db.nilai.find(n => n.nim === nim && n.kode === kode)) {
-    return res.status(400).json({ error: 'Nilai sudah ada, gunakan Edit' });
-  }
-  const na = Math.round(+uts*0.3 + +uas*0.4 + +tugas*0.2 + +hadir*0.1);
-  const grade = calcGrade(na);
-  db.nilai.push({ nim, kode, uts:+uts, uas:+uas, tugas:+tugas, hadir:+hadir, nilai_akhir:na, grade });
-  writeDB(db);
-  res.json({ success: true });
+app.post('/api/nilai',
+  requireAuth,
+  requireRole('admin','dosen'),
+  async (req,res)=>{
+
+    try {
+
+      const { nim, kode, uts, uas, tugas, hadir } = req.body;
+
+      const exist = await Nilai.findOne({
+        nim,
+        kode
+      });
+
+      if (exist) {
+        return res.status(400).json({
+          error:'Nilai sudah ada'
+        });
+      }
+
+      const na =
+        Math.round(
+          (+uts * 0.3) +
+          (+uas * 0.4) +
+          (+tugas * 0.2) +
+          (+hadir * 0.1)
+        );
+
+      const nilai = await Nilai.create({
+        nim,
+        kode,
+        uts:+uts,
+        uas:+uas,
+        tugas:+tugas,
+        hadir:+hadir,
+        nilai_akhir:na,
+        grade:calcGrade(na)
+      });
+
+      res.json({
+        success:true,
+        data:nilai
+      });
+
+    } catch(err){
+      res.status(500).json({
+        error:err.message
+      });
+    }
 });
 
-app.put('/api/nilai/:nim/:kode', requireAuth, requireRole('admin', 'dosen'), (req, res) => {
-  const db = readDB();
-  const idx = db.nilai.findIndex(n => n.nim===req.params.nim && n.kode===req.params.kode);
-  if (idx === -1) return res.status(404).json({ error: 'Tidak ditemukan' });
-  const { uts, uas, tugas, hadir } = req.body;
-  const na = Math.round(+uts*0.3 + +uas*0.4 + +tugas*0.2 + +hadir*0.1);
-  db.nilai[idx] = { ...db.nilai[idx], uts:+uts, uas:+uas, tugas:+tugas, hadir:+hadir, nilai_akhir:na, grade:calcGrade(na) };
-  writeDB(db);
-  res.json({ success: true, data: db.nilai[idx] });
+app.put('/api/nilai/:nim/:kode',
+  requireAuth,
+  requireRole('admin','dosen'),
+  async (req,res)=>{
+
+    try {
+
+      const { uts, uas, tugas, hadir } = req.body;
+
+      const na =
+        Math.round(
+          (+uts * 0.3) +
+          (+uas * 0.4) +
+          (+tugas * 0.2) +
+          (+hadir * 0.1)
+        );
+
+      const nilai = await Nilai.findOneAndUpdate(
+        {
+          nim:req.params.nim,
+          kode:req.params.kode
+        },
+        {
+          uts:+uts,
+          uas:+uas,
+          tugas:+tugas,
+          hadir:+hadir,
+          nilai_akhir:na,
+          grade:calcGrade(na)
+        },
+        {
+          new:true
+        }
+      );
+
+      res.json({
+        success:true,
+        data:nilai
+      });
+
+    } catch(err){
+      res.status(500).json({
+        error:err.message
+      });
+    }
 });
 
-app.delete('/api/nilai/:nim/:kode', requireAuth, requireRole('admin', 'dosen'), (req, res) => {
-  const db = readDB();
-  const idx = db.nilai.findIndex(n => n.nim===req.params.nim && n.kode===req.params.kode);
-  if (idx === -1) return res.status(404).json({ error: 'Tidak ditemukan' });
-  db.nilai.splice(idx, 1);
-  writeDB(db);
-  res.json({ success: true });
+app.delete('/api/nilai/:nim/:kode',
+  requireAuth,
+  requireRole('admin','dosen'),
+  async (req,res)=>{
+
+    try {
+
+      await Nilai.deleteOne({
+        nim:req.params.nim,
+        kode:req.params.kode
+      });
+
+      res.json({
+        success:true
+      });
+
+    } catch(err){
+      res.status(500).json({
+        error:err.message
+      });
+    }
 });
 
 // ===== BACKUP ROUTES =====
@@ -239,19 +468,53 @@ app.delete('/api/backup/:id', requireAuth, requireRole('admin'), (req, res) => {
 });
 
 // ===== STATS (DASHBOARD) =====
-app.get('/api/stats', requireAuth, (req, res) => {
-  const db = readDB();
-  const gradeCount = { A:0, B:0, C:0, D:0, E:0 };
-  db.nilai.forEach(n => { const g = n.grade[0]; if (gradeCount[g] !== undefined) gradeCount[g]++; });
+app.get('/api/stats', requireAuth, async (req,res)=>{
+
+  const mahasiswa = await Mahasiswa.find();
+  const matakuliah = await Matakuliah.find();
+  const nilai = await Nilai.find();
+
+  const gradeCount = {
+    A:0,
+    B:0,
+    C:0,
+    D:0,
+    E:0
+  };
+
+  nilai.forEach(n => {
+    const g = n.grade[0];
+
+    if (gradeCount[g] !== undefined) {
+      gradeCount[g]++;
+    }
+  });
+
   const prodiCount = {};
-  db.mahasiswa.forEach(m => { prodiCount[m.prodi] = (prodiCount[m.prodi]||0)+1; });
-  const rataIPK = db.mahasiswa.length ? (db.mahasiswa.reduce((s,m) => s+m.ipk, 0) / db.mahasiswa.length).toFixed(2) : 0;
-  
+
+  mahasiswa.forEach(m => {
+    prodiCount[m.prodi] =
+      (prodiCount[m.prodi] || 0) + 1;
+  });
+
+  const rataIPK =
+    mahasiswa.length
+      ? (
+          mahasiswa.reduce(
+            (s,m)=>s+m.ipk,
+            0
+          ) / mahasiswa.length
+        ).toFixed(2)
+      : 0;
+
   res.json({
-    totalMahasiswa: db.mahasiswa.length,
-    totalAktif: db.mahasiswa.filter(m=>m.status==='aktif').length,
-    totalMatakuliah: db.matakuliah.length,
-    totalNilai: db.nilai.length,
+    totalMahasiswa: mahasiswa.length,
+    totalAktif:
+      mahasiswa.filter(
+        m=>m.status==='aktif'
+      ).length,
+    totalMatakuliah: matakuliah.length,
+    totalNilai: nilai.length,
     rataIPK,
     gradeCount,
     prodiCount
