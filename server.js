@@ -28,6 +28,10 @@ mongoose.connect(process.env.MONGODB_URI)
     console.error(err);
 });
 
+app.get('/debug-mahasiswa', async (req, res) => {
+  const data = await Mahasiswa.find();
+  res.json(data);
+});
 // ===== SECURITY MIDDLEWARE =====
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: true, credentials: true }));
@@ -89,6 +93,8 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
 // ===== MAHASISWA ROUTES =====
 app.get('/api/mahasiswa', requireAuth, async (req, res) => {
   try {
+
+    console.log("=== CREATE MAHASISWA ===");
     if (req.session.user.role === 'mahasiswa') {
       const mhs = await Mahasiswa.findOne({
         nim: req.session.user.nim
@@ -423,48 +429,181 @@ app.delete('/api/nilai/:nim/:kode',
     }
 });
 
-// ===== BACKUP ROUTES =====
-app.get('/api/backup', requireAuth, requireRole('admin'), (req, res) => {
-  const db = readDB();
-  res.json(db.backups || []);
+// // ===== BACKUP ROUTES =====
+// app.get('/api/backup', requireAuth, requireRole('admin'), (req, res) => {
+//   const db = readDB();
+//   res.json(db.backups || []);
+// });
+
+// app.post('/api/backup', requireAuth, requireRole('admin'), (req, res) => {
+//   const db = readDB();
+//   const backupData = { mahasiswa: db.mahasiswa, matakuliah: db.matakuliah, nilai: db.nilai };
+//   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+//   const filename = `backup-${timestamp}.json`;
+//   const backupPath = path.join(__dirname, 'data', filename);
+  
+//   fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
+  
+//   const entry = {
+//     id: 'bk' + Date.now(),
+//     nama: req.body.tipe === 'manual' ? 'Backup Manual' : 'Backup Otomatis',
+//     waktu: new Date().toLocaleString('id-ID'),
+//     ukuran: (fs.statSync(backupPath).size / 1024).toFixed(1) + ' KB',
+//     status: 'sukses',
+//     tipe: req.body.tipe || 'manual',
+//     file: filename
+//   };
+  
+//   if (!db.backups) db.backups = [];
+//   db.backups.unshift(entry);
+//   writeDB(db);
+//   res.json({ success: true, backup: entry });
+// });
+
+// app.delete('/api/backup/:id', requireAuth, requireRole('admin'), (req, res) => {
+//   const db = readDB();
+//   const idx = (db.backups||[]).findIndex(b => b.id === req.params.id);
+//   if (idx !== -1) {
+//     const b = db.backups[idx];
+//     const filePath = path.join(__dirname, 'data', b.file);
+//     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+//     db.backups.splice(idx, 1);
+//     writeDB(db);
+//   }
+//   res.json({ success: true });
+// });
+
+app.get('/api/backup',
+  requireAuth,
+  requireRole('admin'),
+  async (req, res) => {
+
+    try {
+
+      const backups = await Backup.find()
+        .sort({ createdAt: -1 });
+
+      res.json(backups);
+
+    } catch (err) {
+
+      res.status(500).json({
+        error: err.message
+      });
+
+    }
 });
 
-app.post('/api/backup', requireAuth, requireRole('admin'), (req, res) => {
-  const db = readDB();
-  const backupData = { mahasiswa: db.mahasiswa, matakuliah: db.matakuliah, nilai: db.nilai };
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const filename = `backup-${timestamp}.json`;
-  const backupPath = path.join(__dirname, 'data', filename);
-  
-  fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
-  
-  const entry = {
-    id: 'bk' + Date.now(),
-    nama: req.body.tipe === 'manual' ? 'Backup Manual' : 'Backup Otomatis',
-    waktu: new Date().toLocaleString('id-ID'),
-    ukuran: (fs.statSync(backupPath).size / 1024).toFixed(1) + ' KB',
-    status: 'sukses',
-    tipe: req.body.tipe || 'manual',
-    file: filename
-  };
-  
-  if (!db.backups) db.backups = [];
-  db.backups.unshift(entry);
-  writeDB(db);
-  res.json({ success: true, backup: entry });
+app.post('/api/backup',
+  requireAuth,
+  requireRole('admin'),
+  async (req, res) => {
+
+    try {
+
+      const mahasiswa = await Mahasiswa.find();
+      const matakuliah = await Matakuliah.find();
+      const nilai = await Nilai.find();
+
+      const backupData = {
+        mahasiswa,
+        matakuliah,
+        nilai
+      };
+
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[:.]/g, '-');
+
+      const filename = `backup-${timestamp}.json`;
+
+      const backupPath = path.join(
+        __dirname,
+        'data',
+        filename
+      );
+
+      fs.writeFileSync(
+        backupPath,
+        JSON.stringify(backupData, null, 2)
+      );
+
+      const backup = await Backup.create({
+        nama:
+          req.body.tipe === 'manual'
+            ? 'Backup Manual'
+            : 'Backup Otomatis',
+
+        waktu: new Date().toLocaleString('id-ID'),
+
+        ukuran:
+          (
+            fs.statSync(backupPath).size / 1024
+          ).toFixed(1) + ' KB',
+
+        status: 'sukses',
+
+        tipe: req.body.tipe || 'manual',
+
+        file: filename
+      });
+
+      res.json({
+        success: true,
+        backup
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        error: err.message
+      });
+
+    }
 });
 
-app.delete('/api/backup/:id', requireAuth, requireRole('admin'), (req, res) => {
-  const db = readDB();
-  const idx = (db.backups||[]).findIndex(b => b.id === req.params.id);
-  if (idx !== -1) {
-    const b = db.backups[idx];
-    const filePath = path.join(__dirname, 'data', b.file);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    db.backups.splice(idx, 1);
-    writeDB(db);
-  }
-  res.json({ success: true });
+app.delete('/api/backup/:id',
+  requireAuth,
+  requireRole('admin'),
+  async (req, res) => {
+
+    try {
+
+      const backup = await Backup.findById(
+        req.params.id
+      );
+
+      if (!backup) {
+        return res.status(404).json({
+          error: 'Backup tidak ditemukan'
+        });
+      }
+
+      const filePath = path.join(
+        __dirname,
+        'data',
+        backup.file
+      );
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+
+      await Backup.findByIdAndDelete(
+        req.params.id
+      );
+
+      res.json({
+        success: true
+      });
+
+    } catch (err) {
+
+      res.status(500).json({
+        error: err.message
+      });
+
+    }
 });
 
 // ===== STATS (DASHBOARD) =====

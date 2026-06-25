@@ -1,0 +1,75 @@
+{
+  "mahasiswa": [
+    {
+      "_id": "6a3d46b21e2281b3d3530751",
+      "nim": "1222333",
+      "nama": "steve",
+      "prodi": "Teknik Komputer",
+      "angkatan": 2024,
+      "semester": 1,
+      "email": "djsdhdjhh@gmail.com",
+      "telp": "0812737267",
+      "alamat": "jsdhajhdj",
+      "ipk": 0,
+      "status": "aktif",
+      "__v": 0
+    },
+    {
+      "_id": "6a3d46ed1e2281b3d3530752",
+      "nim": "999277",
+      "nama": "Jobsa",
+      "prodi": "Teknik Informatika",
+      "angkatan": 2024,
+      "semester": 1,
+      "email": "jshajhsjsh@gmail.com",
+      "telp": "0812762722",
+      "alamat": "jshxhahxghg",
+      "ipk": 0,
+      "status": "aktif",
+      "__v": 0
+    },
+    {
+      "_id": "6a3d479989552b64007057b8",
+      "nim": "4444444",
+      "nama": "Fredrin",
+      "prodi": "Teknik Informatika",
+      "angkatan": 2024,
+      "semester": 1,
+      "email": "hsahsghha@gmail.com",
+      "telp": "0812726716",
+      "alamat": "jshajhjhasj",
+      "ipk": 0,
+      "status": "aktif",
+      "__v": 0
+    }
+  ],
+  "matakuliah": [
+    {
+      "_id": "6a3d4f5d467d2750fc4b9680",
+      "kode": "TIF4002",
+      "nama": "Pemrograman Lanjutan",
+      "sks": 3,
+      "semester": 6,
+      "dosen": "Steven Alibi",
+      "prodi": "Teknik Komputer",
+      "hari": "Senin",
+      "jam": "08:00",
+      "ruang": "R-202",
+      "__v": 0
+    }
+  ],
+  "nilai": [
+    {
+      "_id": "6a3d5035be4d26764084dd53",
+      "nim": "202127",
+      "kode": "TIF4002",
+      "uts": 100,
+      "uas": 89,
+      "tugas": 85,
+      "hadir": 90,
+      "nilai_akhir": 92,
+      "grade": "A",
+      "__v": 0
+    }
+  ]
+}

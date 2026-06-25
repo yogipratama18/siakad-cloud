@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -620,45 +619,77 @@ function ico(name, extra='') {
 }
 
 // ═══════════════════════════════════════
-// DATA STORE
+// API HELPER — semua baca/tulis data WAJIB lewat sini, bukan memodifikasi
+// DB.* secara langsung. DB.* hanya cache tampilan di sisi klien; sumber
+// kebenarannya selalu di server (MongoDB Atlas).
+// ═══════════════════════════════════════
+function authToken(){ return localStorage.getItem('siakad_token'); }
+
+async function api(method, url, body) {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = authToken();
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+
+  const res = await fetch(url, opts);
+  let data = {};
+  try { data = await res.json(); } catch {}
+
+  if (res.status === 401) {
+    localStorage.removeItem('siakad_token');
+    localStorage.removeItem('siakad_user');
+    currentUser = null;
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    throw new Error(data.error || 'Sesi berakhir, silakan login kembali');
+  }
+  if (!res.ok) throw new Error(data.error || 'Terjadi kesalahan');
+  return data;
+}
+
+async function loadAllData() {
+
+  const [mhs, mk, nilai, stats] = await Promise.all([
+    api('GET', '/api/mahasiswa'),
+    api('GET', '/api/matakuliah'),
+    api('GET', '/api/nilai'),
+    api('GET', '/api/stats'),
+  ]);
+
+  DB.mahasiswa = mhs;
+  DB.matakuliah = mk;
+  DB.nilai = nilai;
+  DB.stats = stats;
+
+  try {
+    if (currentUser.role === 'admin') {
+      const bkRes = await api('GET', '/api/backup');
+      console.log('[loadAllData] backup raw:', bkRes);
+      // Normalisasi: bisa array langsung atau { data:[...] } atau { backups:[...] }
+      DB.backups = Array.isArray(bkRes) ? bkRes : (bkRes.data || bkRes.backups || []);
+    }
+  } catch(err) {
+    console.log('[loadAllData] backup error:', err);
+    DB.backups = [];
+  }
+}
+
+// ═══════════════════════════════════════
+// DATA STORE — cache di sisi klien, diisi dari API setelah login lewat
+// loadAllData(). TIDAK ADA lagi data contoh hardcoded di sini: sebelumnya
+// array ini berisi data tiruan dan seluruh fitur tambah/ubah/hapus hanya
+// memodifikasi array ini di memori browser — tidak pernah benar-benar
+// tersimpan ke server. Itulah sebab nilai yang diinput dosen tidak pernah
+// muncul di sisi mahasiswa.
 // ═══════════════════════════════════════
 const DB = {
-  mahasiswa: [
-    { nim:'2024001', nama:'Ahmad Rizal Pratama', prodi:'Teknik Informatika', angkatan:2024, semester:2, email:'ahmad@student.ac.id', telp:'081234567890', alamat:'Jl. Merdeka No.1', ipk:3.75, status:'aktif' },
-    { nim:'2024002', nama:'Siti Rahayu Dewi', prodi:'Sistem Informasi', angkatan:2024, semester:2, email:'siti@student.ac.id', telp:'081298765432', alamat:'Jl. Sudirman No.5', ipk:3.82, status:'aktif' },
-    { nim:'2023001', nama:'Budi Santoso', prodi:'Teknik Informatika', angkatan:2023, semester:4, email:'budi@student.ac.id', telp:'081356789012', alamat:'Jl. Gatot Subroto 12', ipk:3.45, status:'aktif' },
-    { nim:'2023002', nama:'Dewi Anggraini', prodi:'Manajemen Informatika', angkatan:2023, semester:4, email:'dewi@student.ac.id', telp:'081367890123', alamat:'Jl. Pemuda 22', ipk:3.61, status:'aktif' },
-    { nim:'2022001', nama:'Eko Prasetyo', prodi:'Teknik Informatika', angkatan:2022, semester:6, email:'eko@student.ac.id', telp:'081445678901', alamat:'Jl. Diponegoro 8', ipk:3.28, status:'cuti' },
-    { nim:'2022002', nama:'Fitri Handayani', prodi:'Sistem Informasi', angkatan:2022, semester:6, email:'fitri@student.ac.id', telp:'081456789012', alamat:'Jl. Ahmad Yani 15', ipk:3.91, status:'aktif' },
-  ],
-  matakuliah: [
-    { kode:'TIF101', nama:'Algoritma & Pemrograman', sks:3, semester:1, dosen:'Dr. Hendra Wijaya', prodi:'Teknik Informatika', hari:'Senin', jam:'08:00', ruang:'Lab A' },
-    { kode:'TIF102', nama:'Matematika Diskrit', sks:3, semester:1, dosen:'Dr. Sri Mulyani', prodi:'Teknik Informatika', hari:'Selasa', jam:'10:00', ruang:'R-201' },
-    { kode:'TIF201', nama:'Struktur Data', sks:3, semester:3, dosen:'Prof. Ahmad Fauzi', prodi:'Teknik Informatika', hari:'Rabu', jam:'13:00', ruang:'Lab B' },
-    { kode:'TIF301', nama:'Basis Data', sks:3, semester:5, dosen:'Dr. Linda Sari', prodi:'Teknik Informatika', hari:'Kamis', jam:'09:00', ruang:'Lab A' },
-    { kode:'TIF302', nama:'Jaringan Komputer', sks:2, semester:5, dosen:'Dr. Hendra Wijaya', prodi:'Teknik Informatika', hari:'Jumat', jam:'10:00', ruang:'Lab C' },
-    { kode:'SI101', nama:'Sistem Informasi Manajemen', sks:3, semester:1, dosen:'Prof. Bambang S.', prodi:'Sistem Informasi', hari:'Senin', jam:'13:00', ruang:'R-301' },
-    { kode:'SI201', nama:'Analisis Sistem', sks:3, semester:3, dosen:'Dr. Linda Sari', prodi:'Sistem Informasi', hari:'Rabu', jam:'08:00', ruang:'R-202' },
-  ],
-  nilai: [
-    { nim:'2024001', kode:'TIF101', uts:78, uas:85, tugas:88, hadir:95, nilai_akhir:84, grade:'B+' },
-    { nim:'2024001', kode:'TIF102', uts:82, uas:90, tugas:85, hadir:100, nilai_akhir:87, grade:'A-' },
-    { nim:'2024002', kode:'SI101', uts:90, uas:92, tugas:95, hadir:98, nilai_akhir:92, grade:'A' },
-    { nim:'2023001', kode:'TIF201', uts:75, uas:80, tugas:82, hadir:90, nilai_akhir:79, grade:'B' },
-    { nim:'2023001', kode:'TIF301', uts:88, uas:85, tugas:90, hadir:95, nilai_akhir:87, grade:'A-' },
-    { nim:'2022002', kode:'TIF301', uts:92, uas:96, tugas:98, hadir:100, nilai_akhir:95, grade:'A' },
-    { nim:'2022002', kode:'TIF302', uts:89, uas:91, tugas:93, hadir:95, nilai_akhir:91, grade:'A' },
-  ],
-  backups: [
-    { id:'bk001', nama:'Backup Otomatis', waktu:'2025-01-21 02:00', ukuran:'2.4 MB', status:'sukses', tipe:'otomatis' },
-    { id:'bk002', nama:'Backup Manual', waktu:'2025-01-20 15:30', ukuran:'2.3 MB', status:'sukses', tipe:'manual' },
-    { id:'bk003', nama:'Backup Otomatis', waktu:'2025-01-20 02:00', ukuran:'2.3 MB', status:'sukses', tipe:'otomatis' },
-  ],
-  users: [
-    { id:'admin', pass:'admin123', role:'admin', nama:'Administrator', color:'#3a3a3a' },
-    { id:'dosen', pass:'dosen123', role:'dosen', nama:'Dr. Hendra Wijaya', nidn:'0123456789', color:'#4a5a4a' },
-    { id:'mahasiswa', pass:'mhs123', role:'mahasiswa', nama:'Ahmad Rizal Pratama', nim:'2024001', color:'#4a4a5a' },
-  ]
+  mahasiswa: [],
+  matakuliah: [],
+  nilai: [],
+  backups: [],
+  stats: null,
 };
 
 // ═══ AUTH ═══
@@ -672,21 +703,71 @@ function setRole(r) {
   document.getElementById('login-pass').value = d[r][1];
 }
 
-function doLogin() {
-  const u = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value.trim();
-  const user = DB.users.find(x => x.id===u && x.pass===p);
-  if (!user) { showAlert('login-alert','Username atau password salah'); return; }
-  currentUser = user;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('user-name').textContent = user.nama;
-  document.getElementById('user-role').textContent = user.role==='admin'?'Administrator':user.role==='dosen'?'Dosen':'Mahasiswa';
-  const av = document.getElementById('user-avatar');
-  av.textContent = user.nama[0];
-  av.style.background = user.color;
-  buildNav();
-  navigate('dashboard');
+async function doLogin() {
+
+  const username =
+    document.getElementById('login-user').value.trim();
+
+  const password =
+    document.getElementById('login-pass').value.trim();
+
+  try {
+
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        username,
+        password
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      showAlert('login-alert', result.error || 'Login gagal');
+      return;
+    }
+
+    currentUser = result.user;
+
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+
+    document.getElementById('user-name').textContent =
+      currentUser.nama;
+
+    document.getElementById('user-role').textContent =
+      currentUser.role === 'admin'
+        ? 'Administrator'
+        : currentUser.role === 'dosen'
+        ? 'Dosen'
+        : 'Mahasiswa';
+
+    const av = document.getElementById('user-avatar');
+
+    av.textContent =
+      currentUser.nama.charAt(0).toUpperCase();
+
+    av.style.background =
+      currentUser.color || '#2563eb';
+
+    buildNav();
+
+    navigate('dashboard');
+
+  } catch (err) {
+
+    console.error(err);
+
+    showAlert(
+      'login-alert',
+      'Tidak dapat terhubung ke server'
+    );
+  }
 }
 
 function doLogout() {
@@ -736,12 +817,33 @@ const PAGE_TITLES = {dashboard:'Dashboard',profile:'Profil',mahasiswa:'Data Maha
 
 function navigate(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
   const el = document.getElementById('nav-'+page);
   if (el) el.classList.add('active');
-  document.getElementById('page-title').textContent = PAGE_TITLES[page]||page;
+
+  document.getElementById('page-title').textContent =
+    PAGE_TITLES[page] || page;
+
   const fn = PAGES[page];
-  document.getElementById('main-content').innerHTML = fn ? fn() : `<div class="card card-body" style="padding:40px;text-align:center;color:var(--text-muted)">Halaman tidak tersedia</div>`;
-  if (page==='arsitektur') setTimeout(drawArch,80);
+
+  document.getElementById('main-content').innerHTML =
+    fn
+      ? fn()
+      : `<div class="card card-body" style="padding:40px;text-align:center;color:var(--text-muted)">
+          Halaman tidak tersedia
+        </div>`;
+
+  if (page === 'arsitektur') {
+    setTimeout(drawArch, 80);
+  }
+
+  // TUTUP SIDEBAR SAAT MOBILE
+  if (window.innerWidth <= 768) {
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.classList.remove('open');
+    }
+  }
 }
 
 // ═══ HELPERS ═══
@@ -931,36 +1033,133 @@ function filterMhs(){
   );
 }
 
-function modalAddMhs(){
-  openModal(`<div class="modal-header"><div class="modal-title">${ICONS.plus} Tambah Mahasiswa</div><button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button></div>
-  <div class="modal-body">
-    <div class="grid-2 mb-16">
-      <div class="form-group"><label class="form-label">NIM</label><input class="form-input" id="fm-nim" placeholder="2024010"></div>
-      <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" id="fm-nama" placeholder="Nama mahasiswa"></div>
+function modalAddMhs() {
+  openModal(`
+    <div class="modal-header">
+      <div class="modal-title">${ICONS.plus} Tambah Mahasiswa</div>
+      <button class="close-btn" onclick="closeModalBtn()">${ICONS.x}</button>
     </div>
-    <div class="grid-2 mb-16">
-      <div class="form-group"><label class="form-label">Program Studi</label><select class="form-input" id="fm-prodi">${[...new Set(DB.mahasiswa.map(m=>m.prodi))].map(p=>`<option>${p}</option>`).join('')}</select></div>
-      <div class="form-group"><label class="form-label">Angkatan</label><input class="form-input" id="fm-angk" type="number" value="2024"></div>
+
+    <div class="modal-body">
+
+      <div class="grid-2 mb-16">
+        <div class="form-group">
+          <label class="form-label">NIM</label>
+          <input class="form-input" id="fm-nim" placeholder="2024010">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <input class="form-input" id="fm-nama" placeholder="Nama mahasiswa">
+        </div>
+      </div>
+
+      <div class="grid-2 mb-16">
+
+        <div class="form-group">
+          <label class="form-label">Program Studi</label>
+          <select class="form-input" id="fm-prodi">
+            <option value="Teknik Informatika">Teknik Informatika</option>
+            <option value="Sistem Informasi">Sistem Informasi</option>
+            <option value="Manajemen Informatika">Manajemen Informatika</option>
+            <option value="Teknik Komputer">Teknik Komputer</option>
+            <option value="Teknologi Informasi">Teknologi Informasi</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Angkatan</label>
+          <input class="form-input" id="fm-angk" type="number" value="2024">
+        </div>
+
+      </div>
+
+      <div class="grid-2 mb-16">
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="fm-email" type="email" placeholder="email@student.ac.id">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">No. Telepon</label>
+          <input class="form-input" id="fm-telp" placeholder="08xxxxxxxxxx">
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Alamat</label>
+        <input class="form-input" id="fm-alamat" placeholder="Alamat lengkap">
+      </div>
+
     </div>
-    <div class="grid-2 mb-16">
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="fm-email" type="email" placeholder="email@student.ac.id"></div>
-      <div class="form-group"><label class="form-label">No. Telepon</label><input class="form-input" id="fm-telp" placeholder="08xxxxxxxxxx"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModalBtn()">Batal</button>
+      <button class="btn btn-dark" onclick="saveMhs()">
+        ${ICONS.save} Simpan
+      </button>
     </div>
-    <div class="form-group"><label class="form-label">Alamat</label><input class="form-input" id="fm-alamat" placeholder="Alamat lengkap"></div>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-ghost" onclick="closeModalBtn()">Batal</button>
-    <button class="btn btn-dark" onclick="saveMhs()">${ICONS.save} Simpan</button>
-  </div>`);
+  `);
 }
 
-function saveMhs(){
-  const nim=document.getElementById('fm-nim').value.trim();
-  const nama=document.getElementById('fm-nama').value.trim();
-  if(!nim||!nama){showToast('NIM dan Nama wajib diisi','danger');return;}
-  if(DB.mahasiswa.find(m=>m.nim===nim)){showToast('NIM sudah terdaftar','danger');return;}
-  DB.mahasiswa.push({nim,nama,prodi:document.getElementById('fm-prodi').value,angkatan:+document.getElementById('fm-angk').value,semester:1,email:document.getElementById('fm-email').value,telp:document.getElementById('fm-telp').value,alamat:document.getElementById('fm-alamat').value,ipk:0,status:'aktif'});
-  closeModalBtn();showToast('Mahasiswa berhasil ditambahkan');navigate('mahasiswa');
+async function saveMhs() {
+
+  const nim = document.getElementById('fm-nim').value.trim();
+  const nama = document.getElementById('fm-nama').value.trim();
+
+  if (!nim || !nama) {
+    showToast('NIM dan Nama wajib diisi', 'danger');
+    return;
+  }
+
+  try {
+
+    const response = await fetch('/api/mahasiswa', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        nim,
+        nama,
+        prodi: document.getElementById('fm-prodi').value,
+        angkatan: Number(document.getElementById('fm-angk').value),
+        semester: 1,
+        email: document.getElementById('fm-email').value,
+        telp: document.getElementById('fm-telp').value,
+        alamat: document.getElementById('fm-alamat').value
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      showToast(result.error || 'Gagal menambahkan mahasiswa', 'danger');
+      return;
+    }
+
+    // Reload data dari MongoDB
+    await loadAllData();
+
+    // Tutup modal
+    closeModalBtn();
+
+    // Refresh halaman mahasiswa
+    navigate('mahasiswa');
+
+    // Notifikasi sukses
+    showToast('Mahasiswa berhasil ditambahkan', 'success');
+
+  } catch (err) {
+
+    console.error(err);
+
+    showToast('Terjadi kesalahan server', 'danger');
+
+  }
 }
 
 function modalViewMhs(nim){
@@ -1012,21 +1211,37 @@ function modalEditMhs(nim){
   </div>`);
 }
 
-function updateMhs(nim){
-  const m=DB.mahasiswa.find(x=>x.nim===nim);
-  m.nama=document.getElementById('em-nama').value;
-  m.email=document.getElementById('em-email').value;
-  m.telp=document.getElementById('em-telp').value;
-  m.semester=+document.getElementById('em-sem').value;
-  m.status=document.getElementById('em-status').value;
-  m.ipk=+document.getElementById('em-ipk').value;
-  closeModalBtn();showToast('Data berhasil diperbarui');navigate('mahasiswa');
+async function updateMhs(nim){
+  try {
+    await api('PUT', `/api/mahasiswa/${nim}`, {
+      nama:     document.getElementById('em-nama').value,
+      email:    document.getElementById('em-email').value,
+      telp:     document.getElementById('em-telp').value,
+      semester: +document.getElementById('em-sem').value,
+      status:   document.getElementById('em-status').value,
+      ipk:      +document.getElementById('em-ipk').value
+    });
+    closeModalBtn();
+    await loadAllData();
+    navigate('mahasiswa');
+    showToast('Data mahasiswa berhasil diperbarui');
+  } catch(err) {
+    console.error(err);
+    showToast(err.message || 'Gagal memperbarui mahasiswa', 'danger');
+  }
 }
 
-function deleteMhs(nim){
-  if(!confirm(`Hapus mahasiswa NIM ${nim}?`))return;
-  DB.mahasiswa.splice(DB.mahasiswa.findIndex(m=>m.nim===nim),1);
-  showToast('Mahasiswa dihapus','info');navigate('mahasiswa');
+async function deleteMhs(nim){
+  if(!confirm(`Hapus mahasiswa NIM ${nim}?`)) return;
+  try {
+    await api('DELETE', `/api/mahasiswa/${nim}`);
+    await loadAllData();
+    navigate('mahasiswa');
+    showToast('Mahasiswa berhasil dihapus', 'info');
+  } catch(err) {
+    console.error(err);
+    showToast(err.message || 'Gagal menghapus mahasiswa', 'danger');
+  }
 }
 
 // ── MATAKULIAH ──
@@ -1079,7 +1294,11 @@ function modalAddMK(){
       <div class="form-group"><label class="form-label">SKS</label><input class="form-input" id="mk-sks" type="number" min="1" max="6" value="3"></div>
       <div class="form-group"><label class="form-label">Semester</label><input class="form-input" id="mk-sem" type="number" min="1" max="8" value="1"></div>
     </div>
-    <div class="form-group mb-16"><label class="form-label">Program Studi</label><select class="form-input" id="mk-prodi2">${[...new Set(DB.matakuliah.map(m=>m.prodi))].map(p=>`<option>${p}</option>`).join('')}</select></div>
+    <div class="form-group mb-16"><label class="form-label">Program Studi</label><select class="form-input" id="mk-prodi2">
+${[...new Set(DB.mahasiswa.map(m=>m.prodi))]
+  .map(p => `<option value="${p}">${p}</option>`)
+  .join('')}
+</select></div>
     <div class="form-group mb-16"><label class="form-label">Dosen Pengampu</label><input class="form-input" id="mk-dosen" placeholder="Nama dosen"></div>
     <div class="grid-2 mb-16">
       <div class="form-group"><label class="form-label">Hari</label><select class="form-input" id="mk-hari"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option></select></div>
@@ -1093,13 +1312,45 @@ function modalAddMK(){
   </div>`);
 }
 
-function saveMK(){
-  const kode=document.getElementById('mk-kode').value.trim();
-  const nama=document.getElementById('mk-nama').value.trim();
-  if(!kode||!nama){showToast('Kode dan Nama wajib diisi','danger');return;}
-  if(DB.matakuliah.find(m=>m.kode===kode)){showToast('Kode sudah ada','danger');return;}
-  DB.matakuliah.push({kode,nama,sks:+document.getElementById('mk-sks').value,semester:+document.getElementById('mk-sem').value,prodi:document.getElementById('mk-prodi2').value,dosen:document.getElementById('mk-dosen').value,hari:document.getElementById('mk-hari').value,jam:document.getElementById('mk-jam').value,ruang:document.getElementById('mk-ruang').value});
-  closeModalBtn();showToast('Mata kuliah berhasil ditambahkan');navigate('matakuliah');
+async function saveMK() {
+
+  const kode = document.getElementById('mk-kode').value.trim();
+  const nama = document.getElementById('mk-nama').value.trim();
+
+  if (!kode || !nama) {
+    showToast('Kode dan Nama wajib diisi','danger');
+    return;
+  }
+
+  try {
+
+    const result = await api('POST','/api/matakuliah', {
+      kode,
+      nama,
+      sks: Number(document.getElementById('mk-sks').value),
+      semester: Number(document.getElementById('mk-sem').value),
+      prodi: document.getElementById('mk-prodi2').value,
+      dosen: document.getElementById('mk-dosen').value,
+      hari: document.getElementById('mk-hari').value,
+      jam: document.getElementById('mk-jam').value,
+      ruang: document.getElementById('mk-ruang').value
+    });
+
+    closeModalBtn();
+
+    await loadAllData();
+
+    navigate('matakuliah');
+
+    showToast('Mata kuliah berhasil ditambahkan');
+
+  } catch(err) {
+
+    console.error(err);
+
+    showToast(err.message,'danger');
+
+  }
 }
 
 function modalEditMK(kode){
@@ -1127,19 +1378,38 @@ function modalEditMK(kode){
   </div>`);
 }
 
-function updateMK(kode){
-  const m=DB.matakuliah.find(x=>x.kode===kode);
-  m.nama=document.getElementById('emk-nama').value;m.sks=+document.getElementById('emk-sks').value;
-  m.semester=+document.getElementById('emk-sem').value;m.dosen=document.getElementById('emk-dosen').value;
-  m.hari=document.getElementById('emk-hari').value;m.jam=document.getElementById('emk-jam').value;
-  m.ruang=document.getElementById('emk-ruang').value;
-  closeModalBtn();showToast('Mata kuliah diperbarui');navigate('matakuliah');
+async function updateMK(kode){
+  try {
+    await api('PUT', `/api/matakuliah/${kode}`, {
+      nama:     document.getElementById('emk-nama').value,
+      sks:      +document.getElementById('emk-sks').value,
+      semester: +document.getElementById('emk-sem').value,
+      dosen:    document.getElementById('emk-dosen').value,
+      hari:     document.getElementById('emk-hari').value,
+      jam:      document.getElementById('emk-jam').value,
+      ruang:    document.getElementById('emk-ruang').value
+    });
+    closeModalBtn();
+    await loadAllData();
+    navigate('matakuliah');
+    showToast('Mata kuliah berhasil diperbarui');
+  } catch(err) {
+    console.error(err);
+    showToast(err.message || 'Gagal memperbarui mata kuliah', 'danger');
+  }
 }
 
-function deleteMK(kode){
-  if(!confirm(`Hapus mata kuliah ${kode}?`))return;
-  DB.matakuliah.splice(DB.matakuliah.findIndex(m=>m.kode===kode),1);
-  showToast('Mata kuliah dihapus','info');navigate('matakuliah');
+async function deleteMK(kode){
+  if(!confirm(`Hapus mata kuliah ${kode}?`)) return;
+  try {
+    await api('DELETE', `/api/matakuliah/${kode}`);
+    await loadAllData();
+    navigate('matakuliah');
+    showToast('Mata kuliah berhasil dihapus', 'info');
+  } catch(err) {
+    console.error(err);
+    showToast(err.message || 'Gagal menghapus mata kuliah', 'danger');
+  }
 }
 
 // ── NILAI ──
@@ -1221,15 +1491,42 @@ function prvNA(){
   if(document.getElementById('prv-grade'))document.getElementById('prv-grade').textContent=calcGrade(na);
 }
 
-function saveNilai(){
-  const nim=document.getElementById('n-nim').value;
-  const kode=document.getElementById('n-mk2').value;
-  if(DB.nilai.find(n=>n.nim===nim&&n.kode===kode)){showToast('Nilai sudah ada, gunakan Edit','danger');return;}
-  const uts=+document.getElementById('n-uts').value,uas=+document.getElementById('n-uas').value;
-  const tugas=+document.getElementById('n-tugas').value,hadir=+document.getElementById('n-hadir').value;
-  const na=calcNA({uts,uas,tugas,hadir});
-  DB.nilai.push({nim,kode,uts,uas,tugas,hadir,nilai_akhir:na,grade:calcGrade(na)});
-  closeModalBtn();showToast('Nilai berhasil disimpan');navigate('nilai');
+async function saveNilai() {
+
+  const nim = document.getElementById('n-nim').value;
+  const kode = document.getElementById('n-mk2').value;
+
+  const uts = Number(document.getElementById('n-uts').value);
+  const uas = Number(document.getElementById('n-uas').value);
+  const tugas = Number(document.getElementById('n-tugas').value);
+  const hadir = Number(document.getElementById('n-hadir').value);
+
+  try {
+
+    await api('POST', '/api/nilai', {
+      nim,
+      kode,
+      uts,
+      uas,
+      tugas,
+      hadir
+    });
+
+    closeModalBtn();
+
+    await loadAllData();
+
+    navigate('nilai');
+
+    showToast('Nilai berhasil disimpan');
+
+  } catch(err) {
+
+    console.error(err);
+
+    showToast(err.message, 'danger');
+
+  }
 }
 
 function modalEditNilai(nim,kode){
@@ -1268,18 +1565,34 @@ function prvNA2(){
   if(document.getElementById('prv-grade2'))document.getElementById('prv-grade2').textContent=calcGrade(na);
 }
 
-function updateNilai(nim,kode){
-  const n=DB.nilai.find(x=>x.nim===nim&&x.kode===kode);
-  n.uts=+document.getElementById('en-uts').value;n.uas=+document.getElementById('en-uas').value;
-  n.tugas=+document.getElementById('en-tugas').value;n.hadir=+document.getElementById('en-hadir').value;
-  n.nilai_akhir=calcNA(n);n.grade=calcGrade(n.nilai_akhir);
-  closeModalBtn();showToast('Nilai berhasil diperbarui');navigate('nilai');
+async function updateNilai(nim,kode){
+  const uts   = +document.getElementById('en-uts').value;
+  const uas   = +document.getElementById('en-uas').value;
+  const tugas = +document.getElementById('en-tugas').value;
+  const hadir = +document.getElementById('en-hadir').value;
+  try {
+    await api('PUT', `/api/nilai/${nim}/${kode}`, { uts, uas, tugas, hadir });
+    closeModalBtn();
+    await loadAllData();
+    navigate('nilai');
+    showToast('Nilai berhasil diperbarui');
+  } catch(err) {
+    console.error(err);
+    showToast(err.message || 'Gagal memperbarui nilai', 'danger');
+  }
 }
 
-function deleteNilai(nim,kode){
-  if(!confirm('Hapus data nilai ini?'))return;
-  DB.nilai.splice(DB.nilai.findIndex(n=>n.nim===nim&&n.kode===kode),1);
-  showToast('Nilai dihapus','info');navigate('nilai');
+async function deleteNilai(nim,kode){
+  if(!confirm('Hapus data nilai ini?')) return;
+  try {
+    await api('DELETE', `/api/nilai/${nim}/${kode}`);
+    await loadAllData();
+    navigate('nilai');
+    showToast('Nilai berhasil dihapus', 'info');
+  } catch(err) {
+    console.error(err);
+    showToast(err.message || 'Gagal menghapus nilai', 'danger');
+  }
 }
 
 // ── PROFILE ──
@@ -1399,45 +1712,90 @@ PAGES.backup = function(){
 };
 
 function bkRows(){
-  return DB.backups.map(b=>`<div class="backup-list-item">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="width:38px;height:38px;background:var(--bg2);border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)">
-        ${b.tipe==='otomatis'?ICONS.robot:ICONS.person}
+  if(!DB.backups || DB.backups.length === 0){
+    return `<div style="text-align:center;padding:24px;color:var(--text-muted)" class="text-sm">Belum ada backup tersimpan</div>`;
+  }
+  return DB.backups.map(b=>{
+    // MongoDB pakai _id, fallback ke id
+    const bkId   = b._id || b.id || '';
+    const bkNama = b.nama || `Backup ${b.tipe==='manual'?'Manual':'Otomatis'}`;
+    const bkWaktu= b.waktu || b.createdAt || b.created_at || '-';
+    const bkUkur = b.ukuran || b.size || '-';
+    const bkStat = b.status || 'sukses';
+    const bkTipe = b.tipe || b.type || 'manual';
+    return `<div class="backup-list-item">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:38px;height:38px;background:var(--bg2);border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)">
+          ${bkTipe==='otomatis'?ICONS.robot:ICONS.person}
+        </div>
+        <div>
+          <div class="fw-700" style="font-size:13.5px">${bkNama}</div>
+          <div class="text-sm text-muted">${bkWaktu} · ${bkUkur}</div>
+        </div>
       </div>
-      <div>
-        <div class="fw-700" style="font-size:13.5px">${b.nama}</div>
-        <div class="text-sm text-muted">${b.waktu} · ${b.ukuran}</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="badge badge-success">${ICONS.check} ${bkStat}</span>
+        <button class="btn btn-ghost btn-sm" onclick="doRestore('${bkId}')">${ICONS.restore} Restore</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteBk('${bkId}')">${ICONS.trash}</button>
       </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:6px">
-      <span class="badge badge-success">${ICONS.check} ${b.status}</span>
-      <button class="btn btn-ghost btn-sm" onclick="doRestore('${b.id}')">${ICONS.restore} Restore</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteBk('${b.id}')">${ICONS.trash}</button>
-    </div>
-  </div>`).join('')||`<div style="text-align:center;padding:24px;color:var(--text-muted)" class="text-sm">Belum ada backup tersimpan</div>`;
+    </div>`;
+  }).join('');
 }
 
-function doBackup(tipe){
+async function doBackup(tipe){
   showToast('Memproses backup…','info');
-  setTimeout(()=>{
-    const ts=new Date().toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'});
-    DB.backups.unshift({id:'bk'+Date.now(),nama:`Backup ${tipe==='manual'?'Manual':'Otomatis'}`,waktu:ts,ukuran:'2.5 MB',status:'sukses',tipe});
+  try {
+    const created = await api('POST', '/api/backup', { tipe });
+    console.log('[doBackup] response:', created);
+
+    const list = await api('GET', '/api/backup');
+    console.log('[doBackup] list:', list);
+
+    // API bisa kembalikan array langsung atau { data: [...] }
+    DB.backups = Array.isArray(list) ? list : (list.data || list.backups || []);
+
     showToast('Backup berhasil dibuat');
-    document.getElementById('bk-list').innerHTML=bkRows();
-  },1400);
+
+    // Refresh list dan counter
+    const bkListEl = document.getElementById('bk-list');
+    if(bkListEl) bkListEl.innerHTML = bkRows();
+
+    // Update counter "N tersimpan" di card header
+    const countEls = document.querySelectorAll('.text-sm.text-muted');
+    countEls.forEach(el => {
+      if(el.textContent.includes('tersimpan')) el.textContent = `${DB.backups.length} tersimpan`;
+    });
+
+  } catch(err) {
+    console.error('[doBackup] error:', err);
+    showToast(err.message || 'Gagal membuat backup', 'danger');
+  }
 }
 
-function doRestore(id){
-  if(!confirm('Restore backup ini? Data saat ini akan digantikan.'))return;
+async function doRestore(id){
+  if(!confirm('Restore backup ini? Data saat ini akan digantikan.')) return;
   showToast('Memproses restore…','info');
-  setTimeout(()=>showToast('Restore berhasil'),2000);
+  try {
+    await api('POST', `/api/backup/${id}/restore`);
+    await loadAllData();
+    showToast('Restore berhasil');
+  } catch(err) {
+    console.error(err);
+    showToast(err.message || 'Gagal melakukan restore', 'danger');
+  }
 }
 
-function deleteBk(id){
-  if(!confirm('Hapus backup ini?'))return;
-  DB.backups.splice(DB.backups.findIndex(b=>b.id===id),1);
-  showToast('Backup dihapus','info');
-  document.getElementById('bk-list').innerHTML=bkRows();
+async function deleteBk(id){
+  if(!confirm('Hapus backup ini?')) return;
+  try {
+    await api('DELETE', `/api/backup/${id}`);
+    DB.backups = await api('GET', '/api/backup');
+    showToast('Backup dihapus', 'info');
+    document.getElementById('bk-list').innerHTML = bkRows();
+  } catch(err) {
+    console.error(err);
+    showToast(err.message || 'Gagal menghapus backup', 'danger');
+  }
 }
 
 // ── ARSITEKTUR ──
@@ -1533,8 +1891,30 @@ function drawArch(){
 }
 
 // ═══ INIT ═══
-window.addEventListener('resize',()=>{
-  document.getElementById('mob-toggle').style.display=window.innerWidth<768?'flex':'none';
+window.addEventListener('DOMContentLoaded', async () => {
+
+  try {
+
+    const response = await fetch('/api/auth/me', {
+      credentials: 'include'
+    });
+
+    if (!response.ok) return;
+
+    currentUser = await response.json();
+
+    await loadAllData();
+
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+
+    buildNav();
+    navigate('dashboard');
+
+  } catch(err) {
+    console.log(err);
+  }
+
 });
 </script>
 </body>

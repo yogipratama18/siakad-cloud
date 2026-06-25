@@ -1,13 +1,14 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const BackupSchema = new mongoose.Schema({
-  id: String,
   nama: String,
   waktu: String,
   ukuran: String,
   status: String,
   tipe: String,
   file: String
+}, {
+  timestamps: true
 });
 
-module.exports = mongoose.model("Backup", BackupSchema);
+module.exports = mongoose.model('Backup', BackupSchema);
